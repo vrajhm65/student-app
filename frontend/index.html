@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student App</title>
+</head>
+<body>
+
+  <h2>Add Student</h2>
+
+  <input type="text" id="name" placeholder="Name"><br><br>
+  <input type="text" id="usn" placeholder="USN"><br><br>
+  <input type="text" id="branch" placeholder="Branch"><br><br>
+  <button onclick="logout()">logout</button>
+  <button id="addBtn"onclick="addStudent()">Add Student</button>
+  <h3>Student List</h3>
+  <ul id="studentList"></ul>
+
+  <script>
+      if(localStorage.getItem("loggedin")!=="true"){
+      alert("please login first");
+      window.location.href="login.html";
+      }
+
+    function addStudent() {
+      const name = document.getElementById("name").value;
+      const usn = document.getElementById("usn").value;
+      const branch = document.getElementById("branch").value;
+      
+
+      fetch("http://localhost:3000/add-student", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, usn, branch})
+      })
+      .then(res => res.text())
+      .then(data => {
+        alert(data);
+        loadStudents();//list updates instantly
+      });
+    }
+ 
+  function loadStudents() {
+    fetch("http://localhost:3000/students")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("studentList");
+        list.innerHTML = "";
+
+        data.forEach(student => {
+          const li = document.createElement("li");
+          li.innerHTML = `${student.name} - ${student.usn} - ${student.branch}
+          <button onclick="deleteStudent(${student.id})">Delete</button>
+          <button onclick="editStudent(${student.id},'${student.name}','${student.usn}','${student.branch}')">Edit</button>`;
+          list.appendChild(li);
+        });
+      });
+  }
+
+  // Load students when page opens
+  window.onload = loadStudents;
+//delete function 
+ function deleteStudent(id) {
+  fetch(`http://localhost:3000/delete-student/${id}`, {
+    method: "DELETE"
+  })
+  .then(res => res.text())
+  .then(data => {
+    alert(data);
+    loadStudents();
+  });
+}
+//adding edit function
+function editStudent(id, name, usn, branch) {
+  document.getElementById("name").value = name;
+  document.getElementById("usn").value = usn;
+  document.getElementById("branch").value = branch;
+
+  document.querySelector("button").onclick = function () {
+    updateStudent(id);
+  };
+}
+
+//adding update function
+function updateStudent(id) {
+  const name = document.getElementById("name").value;
+  const usn = document.getElementById("usn").value;
+  const branch = document.getElementById("branch").value;
+
+  fetch(`http://localhost:3000/update-student/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, usn, branch })
+  })
+  .then(res => res.text())
+  .then(data => {
+    alert(data);
+
+    // reset button
+    document.getElementById("addBtn").innerText = "Add Student";
+    document.getElementById("addBtn").onclick = addStudent;
+
+    loadStudents();
+  });
+}
+//adding edit function
+function editStudent(id, name, usn, branch) {
+  document.getElementById("name").value = name;
+  document.getElementById("usn").value = usn;
+  document.getElementById("branch").value = branch;
+
+  // change button action to update
+  document.getElementById("addBtn").innerText = "Update Student";
+  document.getElementById("addBtn").onclick = function () {
+    updateStudent(id);
+  };
+}
+
+if(data.includes("login")|| data.includes("registered")){
+  localStorage.setItem("loggedin","true");
+  window.location.href="index.html";
+}
+function logout(){
+  localStorage.removeItem("loggedin");
+  window.location.href="login.html";
+}
+</script>
+
+
+</body>
+</html>

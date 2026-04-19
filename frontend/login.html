@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOGIN</title>
+</head>
+<body>
+    <h2> Student login</h2>
+    <input type="text" id="usn" placeholder="Enter USN"><br><br>
+    <input type="password" id="password" placeholder="Enter password"> <br><br>
+    <button onclick="login()">login</button>
+<script>
+    const insertsql="insert into students(usn,password) values(?,?)";
+function login(){
+    const usn=document.getElementById("usn").value;
+    const password=document.getElementById("password").value;
+    fetch("http://localhost:3000/login",{
+        method:"post",
+        headers:{
+            "content-type":"application/json"  
+        },
+        body:JSON.stringify({usn,password})
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        console.log(data);
+        if(data.message==="login succesful"){
+            if(!data.user.name||!data.user.branch){
+                localStorage.setItem("usn",usn);
+                window.location.href="profile.html";
+            }else{
+                window.location.href="index.html";
+            }
+        }else if(data.message==="registerd and logged in"){
+            localStorage.setItem("usn",usn);
+            window.location.href="profile.html";
+        
+            }else{
+                alert(data.message);
+            }
+        })
+        .catch(err=>{
+            console.log(err);
+            alert("error occurred");
+        
+    });
+}
+    </script>
+</body>
+</html>
