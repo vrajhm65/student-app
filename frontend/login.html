@@ -9,7 +9,23 @@
     <h2> Student login</h2>
     <input type="text" id="usn" placeholder="Enter USN"><br><br>
     <input type="password" id="password" placeholder="Enter password"> <br><br>
-    <button onclick="login()">login</button>
+    <label for="branch">Branch</label>
+    <BR> 
+    <select id="branch" name="branch" class="branch-select" required>
+     <option value="">Select Branch</option>
+     <option value="ISE">ISE</option>
+     <option value="CSE">CSE</option>
+     <option value="ECE">ECE</option>
+     <option value="AIDS">AIDS</option>
+     <option value="AIML">AIML</option>
+     <option value="CYBER SECURITY">CYBER SECURITY</option>
+     <option value="ME">Mechanical</option>
+     <option value="CIVIL">Civil</option>
+    </select>
+    <br> 
+      <button onclick="login()">login</button>
+
+
 <script>
     const insertsql="insert into students(usn,password) values(?,?)";
 function login(){

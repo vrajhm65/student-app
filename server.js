@@ -102,8 +102,8 @@ app.put("/update-student/:id", (req, res) => {
   });
 });  
 app.post("/login",(req,res)=>{
-  const {usn,password}=req.body;
-  const sql="select* from students where usn=?";
+  const {usn,password,branch}=req.body;
+  const sql="select* from students where usn=? and password=? and branch=?";
   db.query(sql,[usn],(err,result)=>{
     if(err) return res.send("error");
     if(result.length>0){
