@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATTENDENCE</title>
+</head>
+<body>
+    
+    <h2>Faculty Attendance Panel</h2>
+
+<input type="text" id="passkey" placeholder="Enter Faculty Key"><br><br>
+
+<select id="subject">
+  <option value="DBMS">DBMS</option>
+  <option value="OS">OS</option>
+  <option value="Maths">Maths</option>
+</select>
+
+<br><br>
+
+<div id="studentList"></div>
+
+<button onclick="submitAttendance()">Submit Attendance</button>
+<script>
+    fetch("http://localhost:3000/students")
+.then(res => res.json())
+.then(data => {
+  const div = document.getElementById("studentList");
+
+  data.forEach(student => {
+    div.innerHTML += `
+      <p>
+        ${student.name || student.usn}
+        <select id="${student.usn}">
+          <option value="Present">Present</option>
+          <option value="Absent">Absent</option>
+        </select>
+      </p>
+    `;
+  });
+});
+function submitAttendance() {
+  const passkey = document.getElementById("passkey").value;
+  const subject = document.getElementById("subject").value;
+
+  const records = [];
+
+  document.querySelectorAll("#studentList select").forEach(select => {
+    records.push({
+      usn: select.id,
+      status: select.value
+    });
+  });
+
+  fetch("http://localhost:3000/mark-attendance", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ records, subject, passkey })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+  })
+    .catch(err => {
+        console.error("Error:", err);
+        alert("Error submitting attendance");
+  });
+}
+</script> 
+<h3>view attendance</h3>
+<button onclick="window.location.href='view-attendance.html'">View </button>   
+</body>
+</html>

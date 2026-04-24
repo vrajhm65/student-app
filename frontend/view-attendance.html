@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Attendance</title>
+</head>
+<body>
+
+<h2>Attendance History</h2>
+
+<input type="text" id="usn" placeholder="Enter USN">
+<button onclick="loadAttendance()">View</button>
+
+<table border="1" id="attendanceTable">
+  <tr>
+    <th>USN</th>
+    <th>Subject</th>
+    <th>Date</th>
+    <th>Status</th>
+  </tr>
+</table>
+
+<h3 id="percentage"></h3>
+
+<script>
+function loadAttendance() {
+  const usn = document.getElementById("usn").value;
+
+  fetch(`http://localhost:3000/view-attendance/${usn}`)
+    .then(res => res.json())
+    .then(data => {
+      const table = document.getElementById("attendanceTable");
+
+      // clear old rows except header
+      table.innerHTML = `
+        <tr>
+          <th>USN</th>
+          <th>Subject</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      `;
+
+      let presentCount = 0;
+
+      data.forEach(record => {
+        table.innerHTML += `
+          <tr>
+            <td>${record.usn}</td>
+            <td>${record.subject}</td>
+            <td>${record.date}</td>
+            <td>${record.status}</td>
+          </tr>
+        `;
+
+        if (record.status === "Present") {
+          presentCount++;
+        }
+      });
+
+      let percentage = 0;
+      if (data.length > 0) {
+        percentage = (presentCount / data.length) * 100;
+      }
+
+      document.getElementById("percentage").innerText =
+        "Attendance Percentage: " + percentage.toFixed(2) + "%";
+    });
+}
+</script>
+
+</body>
+</html>

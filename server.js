@@ -2,7 +2,6 @@
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
-
 const app = express();//craeted app
 app.use(cors());// then used middleware
 app.use(express.json());
@@ -101,27 +100,38 @@ app.put("/update-student/:id", (req, res) => {
     res.send("Student updated");
   });
 });  
-app.post("/login",(req,res)=>{
-  const {usn,password,branch}=req.body;
-  const sql="select* from students where usn=? and password=? and branch=?";
-  db.query(sql,[usn],(err,result)=>{
-    if(err) return res.send("error");
-    if(result.length>0){
-      if(result[0].password===password){
-        res.json({
-          message:"login succesful",
-        user:result[0]
-      });
-      }else{
-        res.json("wrong password");
-      }
+app.post("/login", (req, res) => {
+  const { usn, password } = req.body;
+
+  db.query("SELECT * FROM students WHERE usn=?", [usn], (err, result) => {
+
+    if (err) {
+      console.log(err);
+      return res.json({ message: "Server error" });
     }
-    else{
-      const insertsql="insert into students (usn,password) values (?,?)";
-    db.query(insertsql,[usn,password],(err2,result2)=>{
-      if (err2) return res.send("error registering");
-    res.json("registerd and logged in");
-      });
+
+    if (result.length > 0) {
+
+      if (result[0].password === password) {
+        return res.json({ message: "Login successful", user: result[0] });
+      } else {
+        return res.json({ message: "Wrong password" });
+      }
+
+    } else {
+
+      db.query(
+        "INSERT INTO students(usn,password) VALUES(?,?)",
+        [usn, password],
+        (err2) => {
+          if (err2) {
+            console.log(err2);
+            return res.json({ message: "Error registering" });
+          }
+          return res.json({ message: "Registered and logged in" });
+        }
+      );
+
     }
   });
 });
@@ -130,6 +140,45 @@ app.post("/update-profile",(req,res)=>{
   const sql="update students set name=?, branch=? where usn=?";
   db.query(sql,[name,branch,usn],(err,result)=>{
     if(err)return res.send("error updating profile");
-    res.json("profile updated")
+    res.json("profile updated successfully");
+  });
+});
+//getting all students from database
+app.get("/students", (req, res) => {
+  db.query("SELECT * FROM students", (err, result) => {
+    if (err) return res.json([]);
+    res.json(result);
+  });
+});
+//attendemce(mark with passkey)
+const faculty_key="admin123";
+app.post("/mark-attendance", (req, res) => {
+  const { records, subject, passkey } = req.body;
+
+  if (passkey !== "admin123") {
+    return res.json({ message: "Unauthorized " });
+  }
+
+  const date = new Date().toISOString().split("T")[0];
+
+  records.forEach(r => {
+    db.query(
+      "INSERT INTO attendance (usn, subject, date, status) VALUES (?, ?, ?, ?)",
+      [r.usn, subject, date, r.status]
+    );
+  });
+
+  res.json({ message: "Attendance marked successfully " });
+});
+//view attendance
+app.get("/view-attendance/:usn", (req, res) => {
+  const usn = req.params.usn;
+  const sql = "SELECT * FROM attendance WHERE usn=? order by date desc";
+  db.query(sql, [usn], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.json([]);
+    }
+    res.json(result);
   });
 });

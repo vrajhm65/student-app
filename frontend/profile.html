@@ -7,8 +7,19 @@
 </head>
 <body>
     <h2>complete profile</h2>
-    <input type="text" id="name" placeholder="Enter Name"><br><br>
-    <input type="text" id="branch" placeholder="Enter Branch"> <br><br>
+    <input type="text" id="name" placeholder="Enter Name"><br><br>   
+    <select id="branch" name="branch" class="branch-select" required>
+     <option value="">Select Branch</option>
+     <option value="ISE">ISE</option>
+     <option value="CSE">CSE</option>
+     <option value="ECE">ECE</option>
+     <option value="AIDS">AIDS</option>
+     <option value="AIML">AIML</option>
+     <option value="CYBER SECURITY">CYBER SECURITY</option>
+     <option value="ME">Mechanical</option>
+     <option value="CIVIL">Civil</option>
+    </select>
+    <br>
     <button onclick="saveprofile()">save</button>
 <script>
     
