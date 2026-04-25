@@ -194,4 +194,39 @@ app.get("/attendance/:usn/:subject", (req, res) => {
     res.json(result);
   });
 });
+//add subject api
+app.post("/add-subject", (req, res) => {
+  const { subject_name, subject_code } = req.body;
+
+  const sql = "INSERT INTO subjects (subject_name, subject_code) VALUES (?, ?)";
+
+  db.query(sql, [subject_name, subject_code], (err) => {
+    if (err) {
+      console.log(err);
+      return res.json({ message: "Error adding subject" });
+    }
+
+    res.json({ message: "Subject added successfully " });
+  });
+});
+//get sub api
+app.get("/subjects", (req, res) => {
+  db.query("SELECT * FROM subjects", (err, result) => {
+    if (err) return res.json([]);
+    res.json(result);
+  });
+});
+//delete subject api
+app.delete("/delete-subject/:id", (req, res) => {
+  const id = req.params.id;
+
+  db.query("DELETE FROM subjects WHERE id = ?", [id], (err) => {
+    if (err) {
+      console.log(err);
+      return res.json({ message: "Error deleting subject" });
+    }
+
+    res.json({ message: "Subject deleted successfully " });
+  });
+});
 

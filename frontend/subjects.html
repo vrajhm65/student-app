@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>subjects</title>
+</head>
+<body>
+    <h2>Manage Subjects</h2>
+
+<input type="text" id="name" placeholder="Subject Name">
+<input type="text" id="code" placeholder="Subject Code">
+<button onclick="addSubject()">Add Subject</button>
+
+<hr>
+
+<h3>Subject List</h3>
+<div id="subjectList"></div>
+
+<script>
+
+//Load subjects
+function loadSubjects() {
+  fetch("http://localhost:3000/subjects")
+    .then(res => res.json())
+    .then(data => {
+      const div = document.getElementById("subjectList");
+      div.innerHTML = "";
+
+      data.forEach(sub => {
+        div.innerHTML += `
+          <p>
+            ${sub.subject_name} (${sub.subject_code})
+            <button onclick="deleteSubject(${sub.id})">Delete</button>
+          </p>
+        `;
+      });
+    });
+}
+
+//Add subject
+function addSubject() {
+  const subject_name = document.getElementById("name").value;
+  const subject_code = document.getElementById("code").value;
+
+  fetch("http://localhost:3000/add-subject", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ subject_name, subject_code })
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    loadSubjects(); // refresh
+  });
+}
+
+// 🔹 Delete subject
+function deleteSubject(id) {
+  fetch(`http://localhost:3000/delete-subject/${id}`, {
+    method: "DELETE"
+  })
+  .then(res => res.json())
+  .then(data => {
+    alert(data.message);
+    loadSubjects(); // refresh
+  });
+}
+
+//loads subjects on page load
+loadSubjects();
+
+</script>
+    
+</body>
+</html>

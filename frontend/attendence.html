@@ -11,11 +11,7 @@
 
 <input type="text" id="passkey" placeholder="Enter Faculty Key"><br><br>
 
-<select id="subject">
-  <option value="DBMS">DBMS</option>
-  <option value="OS">OS</option>
-  <option value="Maths">Maths</option>
-</select>
+<select id="subject"></select>
 
 <br><br>
 
@@ -23,6 +19,20 @@
 
 <button onclick="submitAttendance()">Submit Attendance</button>
 <script>
+  fetch("http://localhost:3000/subjects")
+.then(res => res.json())
+.then(data => {
+  const select = document.getElementById("subject");
+
+  data.forEach(sub => {
+    select.innerHTML += `
+      <option value="${sub.subject_code}">
+        ${sub.subject_name}
+      </option>
+    `;
+  });
+});
+
     fetch("http://localhost:3000/students")
 .then(res => res.json())
 .then(data => {
@@ -31,7 +41,7 @@
   data.forEach(student => {
     div.innerHTML += `
       <p>
-        ${student.name || student.usn}
+        ${student.name || "no name"} (${student.usn})
         <select id="${student.usn}">
           <option value="Present">Present</option>
           <option value="Absent">Absent</option>
