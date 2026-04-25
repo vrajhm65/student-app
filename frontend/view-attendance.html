@@ -20,15 +20,23 @@
 </table>
 
 <h3 id="percentage"></h3>
+<select id="subject">
+  <option value="DBMS">DBMS</option>
+  <option value="OS">OS</option>
+  <option value="Maths">Maths</option>
+</select>
 
 <script>
 function loadAttendance() {
   const usn = document.getElementById("usn").value;
+  const subject = document.getElementById("subject").value;
 
-  fetch(`http://localhost:3000/view-attendance/${usn}`)
+  fetch(`http://localhost:3000/attendance/${usn}/${subject}`)
     .then(res => res.json())
     .then(data => {
       const table = document.getElementById("attendanceTable");
+      console.log("Data:",data);
+      console.log(usn, subject);
 
       // clear old rows except header
       table.innerHTML = `
@@ -63,7 +71,7 @@ function loadAttendance() {
       }
 
       document.getElementById("percentage").innerText =
-        "Attendance Percentage: " + percentage.toFixed(2) + "%";
+        "Subject attendance: " + percentage.toFixed(2) + "%";
     });
 }
 </script>

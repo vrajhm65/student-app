@@ -182,3 +182,16 @@ app.get("/view-attendance/:usn", (req, res) => {
     res.json(result);
   });
 });
+//attendance per subject
+app.get("/attendance/:usn/:subject", (req, res) => {
+  const { usn, subject } = req.params;
+  const sql = "SELECT * FROM attendance WHERE usn=? AND subject=? ORDER BY date DESC";
+  db.query(sql, [usn, subject], (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.json([]);
+    }
+    res.json(result);
+  });
+});
+
