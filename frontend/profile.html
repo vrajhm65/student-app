@@ -25,10 +25,16 @@
             margin-bottom: 20px;
         }
 
-        input, select {
-            padding: 10px;
+        input{
+            padding: 10px ;
             margin: 5px 0;
             width: 200px;
+        }
+        select {
+            padding: 10px;
+            margin: 5px 0;
+            width: 220px;
+            
         }
 
         button {
@@ -38,17 +44,24 @@
             border: none;
             cursor: pointer;
             border-radius: 15px;
-            
             transition: background-color 0.3s ease;
+            margin-top: 20px;
         }
 
         button:hover {
             background-color: #0056b3;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        i {
+            font-size: 25px;
+            color: #007BFF;
+            margin-bottom: 20px;
+            
         }
      </style>   
 </head>
 <body>
-    <h2>complete profile</h2>
+    <h2>Complete Profile <i class="fa-solid fa-user-pen"></i> </h2>
     <input type="text" id="name" placeholder="Enter Name"><br><br>   
     <select id="branch" name="branch" class="branch-select" required>
      <option value="">Select Branch</option>
