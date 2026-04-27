@@ -19,6 +19,12 @@
 
 <button onclick="submitAttendance()">Submit Attendance</button>
 <script>
+  const access = localStorage.getItem("faculty");
+
+if (access !== "true") {
+  alert("Please login as faculty first ❌");
+  window.location.href = "faculty.html";
+}
   fetch("http://localhost:3000/subjects")
 .then(res => res.json())
 .then(data => {

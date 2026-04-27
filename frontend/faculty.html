@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>faculty-panel</title>
+</head>
+<body>
+    <h2>Faculty Access Panel</h2>
+
+<input type="password" id="key" placeholder="Enter Faculty Key">
+<button onclick="checkKey()">Login</button>
+
+<div id="panel" style="display:none; margin-top:20px;">
+  <h3>Welcome Faculty</h3>
+
+  <button onclick="goAttendance()">Mark Attendance</button>
+  <button onclick="goMarks()">Enter Marks</button>
+  <button onclick="logout()">Logout</button>
+</div>
+
+
+<script>
+function checkKey() {
+  const key = document.getElementById("key").value;
+
+ 
+  if (key === "admin123") {
+    localStorage.setItem("faculty", "true");
+    document.getElementById("panel").style.display = "block";
+    alert("Access Granted ");
+  } else {
+    alert("Unauthorized ");
+  }
+}
+
+function goAttendance() {
+  window.location.href = "attendance.html";
+}
+
+function goMarks() {
+  window.location.href = "marks-table.html";
+}
+
+function logout() {
+  localStorage.removeItem("faculty");
+  document.getElementById("panel").style.display = "none";
+  alert("Logged out successfully.");
+}
+</script>
+</body>
+</html>
