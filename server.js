@@ -229,4 +229,25 @@ app.delete("/delete-subject/:id", (req, res) => {
     res.json({ message: "Subject deleted successfully " });
   });
 });
-
+//getting marks api
+app.get("/marks-data", (req, res) => {
+  db.query("SELECT * FROM students", (err, students) => {
+    if (err) return res.json({ students: [], subjects: [] });
+    
+    db.query("SELECT * FROM subjects", (err, subjects) => {
+      if (err) return res.json({ students, subjects: [] });
+      res.json({ students, subjects });
+    });
+  });
+});
+//save marks api
+app.post("/save-marks", (req, res) => {
+  const{data}=req.body;
+  data.forEach(item=>{
+    db.query(
+      "INSERT INTO marks (usn, subject, marks) VALUES (?, ?, ?)",
+      [item.usn, item.subject, item.marks]
+    );
+  } );
+  res.json({ message: "Marks saved successfully" });
+}); 

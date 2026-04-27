@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>marks-table</title>
+</head>
+<body>
+    <h2>Marks Entry System</h2>
+
+<table border="1" id="marksTable"></table>
+
+<br>
+<button onclick="submitMarks()">Submit All</button>
+
+<script>
+
+let students = [];
+let subjects = [];
+
+// 🔥 Load data
+fetch("http://localhost:3000/marks-data")
+.then(res => res.json())
+.then(data => {
+  students = data.students;
+  subjects = data.subjects;
+
+  createTable();
+});
+
+// 🔥 Create table
+function createTable() {
+  const table = document.getElementById("marksTable");
+
+  // Header
+  let header = "<tr><th>Name</th><th>USN</th>";
+
+  subjects.forEach(sub => {
+    header += `<th>${sub.subject_code}</th>`;
+  });
+
+  header += "</tr>";
+
+  table.innerHTML = header;
+
+  // Rows
+  students.forEach(stu => {
+    let row = `<tr>
+      <td>${stu.name}</td>
+      <td>${stu.usn}</td>
+    `;
+
+    subjects.forEach(sub => {
+      row += `
+        <td>
+          <input type="number" 
+            id="${stu.usn}_${sub.subject_code}" 
+            placeholder="Marks">
+        </td>
+      `;
+    });
+
+    row += "</tr>";
+    table.innerHTML += row;
+  });
+}
+
+// 🔥 Submit all marks
+function submitMarks() {
+  const data = [];
+
+  students.forEach(stu => {
+    subjects.forEach(sub => {
+
+      const value = document.getElementById(`${stu.usn}_${sub.subject_code}`).value;
+
+      if (value) {
+        data.push({
+          usn: stu.usn,
+          subject: sub.subject_code,
+          marks: value
+        });
+      }
+
+    });
+  });
+
+  fetch("http://localhost:3000/save-marks", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ data })
+  })
+  .then(res => res.json())
+  .then(data => alert(data.message));
+}
+
+</script>
+</body>
+</html>
