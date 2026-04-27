@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>view-marks</title>
+</head>
+<body>
+    <h2>Student Marks Dashboard</h2>
+
+<input type="text" id="usn" placeholder="Enter USN">
+<button onclick="loadMarks()">View</button>
+
+<table border="1" id="marksTable">
+  <tr>
+    <th>Subject</th>
+    <th>Marks</th>
+  </tr>
+</table>
+
+<h3 id="total"></h3>
+<h3 id="performance"></h3>
+
+<script>
+function loadMarks() {
+  const usn = document.getElementById("usn").value;
+
+  fetch(`http://localhost:3000/view-marks/${usn}`)
+    .then(res => res.json())
+    .then(data => {
+
+      const table = document.getElementById("marksTable");
+
+      table.innerHTML = `
+        <tr>
+          <th>Subject</th>
+          <th>Marks</th>
+        </tr>
+      `;
+
+      let total = 0;
+
+      data.forEach(row => {
+        table.innerHTML += `
+          <tr>
+            <td>${row.subject}</td>
+            <td>${row.marks}</td>
+          </tr>
+        `;
+
+        total += Number(row.marks);
+      });
+
+      document.getElementById("total").innerText =
+        "Total Marks: " + total;
+
+      // Performance logic
+      let performance = "";
+
+      if (total >= 250) performance = "Excellent ";
+      else if (total >= 180) performance = "Good ";
+      else performance = "Needs Improvement ";
+
+      document.getElementById("performance").innerText =
+        "Performance: " + performance;
+    });
+}
+</script>
+</body>
+</html>

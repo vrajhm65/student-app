@@ -251,3 +251,12 @@ app.post("/save-marks", (req, res) => {
   } );
   res.json({ message: "Marks saved successfully" });
 }); 
+// view marks api
+app.get("/view-marks/:usn", (req, res) => {
+  const usn = req.params.usn;
+  const sql = `SELECT subject, marks FROM marks WHERE usn=?`;
+  db.query(sql, [usn], (err, result) => {
+    if (err) return res.json([]);
+    res.json(result);
+  });
+});
