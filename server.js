@@ -260,3 +260,28 @@ app.get("/view-marks/:usn", (req, res) => {
     res.json(result);
   });
 });
+//student dashboard api
+app.get("/student-profile/:usn", (req, res) => {
+  const usn = req.params.usn;
+
+  // student info
+  db.query("SELECT * FROM students WHERE usn = ?", [usn], (err, student) => {
+    if (err) return res.json({});
+
+    // attendance
+    db.query("SELECT subject, status FROM attendance WHERE usn = ?", [usn], (err, attendance) => {
+
+      // marks
+      db.query("SELECT subject, marks FROM marks WHERE usn = ?", [usn], (err, marks) => {
+
+        res.json({
+          student: student[0],
+          attendance,
+          marks
+        });
+
+      });
+
+    });
+  });
+});

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>student-profile-dashboard</title>
+</head>
+<body>
+    <h2>Student Profile Dashboard</h2>
+
+<input type="text" id="usn" placeholder="Enter USN">
+<button onclick="loadProfile()">Load Profile</button>
+
+<h3 id="studentInfo"></h3>
+
+<h3>Attendance</h3>
+<div id="attendance"></div>
+
+<h3>Marks</h3>
+<div id="marks"></div>
+
+<h3 id="summary"></h3>
+
+<script>
+function loadProfile() {
+  const usn = document.getElementById("usn").value;
+
+  fetch(`http://localhost:3000/student-profile/${usn}`)
+    .then(res => res.json())
+    .then(data => {
+
+      // 👤 Student info
+      document.getElementById("studentInfo").innerText =
+        `Name: ${data.student.name} | USN: ${data.student.usn}`;
+
+      // 📊 Attendance calculation
+      let attendanceMap = {};
+      let totalMap = {};
+
+      data.attendance.forEach(a => {
+        if (!attendanceMap[a.subject]) {
+          attendanceMap[a.subject] = 0;
+          totalMap[a.subject] = 0;
+        }
+
+        if (a.status === "Present") {
+          attendanceMap[a.subject]++;
+        }
+
+        totalMap[a.subject]++;
+      });
+
+      let attendanceHTML = "";
+
+      for (let sub in attendanceMap) {
+        
+        let percent = (attendanceMap[sub] / totalMap[sub]) * 100;
+
+        attendanceHTML += `
+          <p>
+            ${sub}: ${percent.toFixed(2)}%
+            ${percent < 75 ? "⚠️ Low" : "✅"}
+          </p>
+        `;
+      }
+
+      document.getElementById("attendance").innerHTML = attendanceHTML;
+
+      // 📝 Marks
+      let marksHTML = "";
+      let total = 0;
+
+      data.marks.forEach(m => {
+        marksHTML += `<p>${m.subject}: ${m.marks}</p>`;
+        total += Number(m.marks);
+      });
+
+      document.getElementById("marks").innerHTML = marksHTML;
+
+      // 🏆 Summary
+      let performance = "";
+
+      if (total >= 250) performance = "Excellent 🏆";
+      else if (total >= 180) performance = "Good 👍";
+      else performance = "Needs Improvement ⚠️";
+
+      document.getElementById("summary").innerText =
+        `Total Marks: ${total} | Performance: ${performance}`;
+    });
+}
+</script>
+</body>
+</html>
