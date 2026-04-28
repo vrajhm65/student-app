@@ -3,21 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATTENDENCE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+     <title>Attendance</title>
+     <style>
+        *{
+          margin: 0;
+          padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        h1{
+            color: #333;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 200px;
+        }
+        select {
+            padding: 10px;
+            margin: 5px 0;
+            width: 220px;
+            
+        }
+
+        button {
+            padding: 10px 25px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+          }
+        button:hover {
+            background-color:green;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+          i {
+              font-size: 25px;
+              color: green;
+              margin-bottom: 20px;
+             
+          }
+          .main{
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 80vw;
+              height: 80vh;
+              background-color: lightgray;
+              border-radius: 15px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          }
+          .sec1{
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              width: 50%;
+              height: 100%;
+              border-top-left-radius: 15px;
+              border-bottom-left-radius: 15px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          }
+          .input{
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+          }
+          .select{
+              margin-top: 20px;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+
+          }
+          .sec2{
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              width: 50%;
+              height: 100%;
+              background-color: #918e8e;
+              border-top-right-radius: 15px;
+              border-bottom-right-radius: 15px;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          }
+          .list{
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+          }
+          .list p{
+              margin: 10px 0;
+          } 
+          .view{
+              margin-top: 15px;
+              display: flex;
+              flex-direction: column; 
+              align-items: center;
+              justify-content: center;  
+
+          }
+          .view button{
+              background-color: #007BFF;
+              color: white;
+              border: none;
+              cursor: pointer;
+              border-radius: 15px;
+              transition: background-color 0.3s ease;
+              padding: 10px 25px;
+              margin-top: 2px;
+              margin-bottom: 20px;
+          }
+          .view button:hover{
+              background-color:green;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          }
+
+
+ </style>  
+
 </head>
 <body>
-    
-    <h2>Faculty Attendance Panel</h2>
+  <h1>Mark Student Attendance <i class="fa-solid fa-user-graduate"></i></h1>
+ <div class="main">
+  <div class="sec1">
+    <h2>Faculty Attendance Panel<i class="fa-solid fa-screwdriver-wrench"></i></h2>
 
 <input type="text" id="passkey" placeholder="Enter Faculty Key"><br><br>
 
+<div class="select">
 <select id="subject"></select>
-
+</div>
+</div>
 <br><br>
-
+<div class="sec2">
+  <div class="list"></div>
 <div id="studentList"></div>
 
 <button onclick="submitAttendance()">Submit Attendance</button>
+</div>
+</div>
+</div> 
+<div class="view">
+<h3>View Attendance <i class="fa-solid fa-users-viewfinder"></i></h3>
+<button onclick="window.location.href='view-attendance.html'">View </button>   
+</div>
 <script>
   const access = localStorage.getItem("faculty");
 
@@ -86,7 +239,5 @@ function submitAttendance() {
   });
 }
 </script> 
-<h3>view attendance</h3>
-<button onclick="window.location.href='view-attendance.html'">View </button>   
 </body>
 </html>
