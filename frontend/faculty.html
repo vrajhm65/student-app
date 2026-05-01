@@ -3,22 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>faculty-panel</title>
-</head>
-<body>
-    <h2>Faculty Access Panel</h2>
+    <style>
+    /* card layout css styling*/
+        *{
+          margin: 0;
+          padding: 0;
+        }
+        body {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+         input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
 
+        } 
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 0.5px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+            height: 300px;
+            width: 500px;
+            background-color: lightgray
+        }
+        button{
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2{
+            color: #333;
+            margin-bottom: 20px;
+        }
+        i{
+            color: green;
+            margin-left: 10px;
+        }
+        h3{
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+         .container button {
+            width: 150px;
+        }
+        .container button:nth-child(4) {
+            background-color: red;
+        }
+        .container button:nth-child(4):hover {
+            background-color: darkred;
+        }
+
+ </style>       
+</head>
+
+<body>
+  <div class="container">
+    <h2>Faculty Access Panel <i class="fas fa-key"></i></h2>
+<br>
 <input type="password" id="key" placeholder="Enter Faculty Key">
+<br>
 <button onclick="checkKey()">Login</button>
 
 <div id="panel" style="display:none; margin-top:20px;">
-  <h3>Welcome Faculty</h3>
+  <h3>Welcome Faculty !</h3>
 
   <button onclick="goAttendance()">Mark Attendance</button>
   <button onclick="goMarks()">Enter Marks</button>
+ 
   <button onclick="logout()">Logout</button>
+ 
 </div>
-
+</div>
 
 <script>
 function checkKey() {
@@ -35,7 +114,7 @@ function checkKey() {
 }
 
 function goAttendance() {
-  window.location.href = "attendance.html";
+  window.location.href = "attendence.html";
 }
 
 function goMarks() {

@@ -3,13 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>view-marks</title>
+    <style>
+    /* card layout css styling*/
+        *{
+          margin: 0;
+          padding: 0;
+        }
+        body {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+         input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 80px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+
+
+        }
+        h2{
+            color: #333;
+            margin-bottom: 20px;
+            
+        }
+          table {
+              border-collapse: collapse;
+              width: 80%;
+              margin-bottom: 20px;
+              border: 1px solid #ddd;
+              border-radius: 10px;
+              border-color: #333;
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+              
+
+          }
+          th, td {
+              border: 1px solid #ddd;
+              padding: 8px;
+              text-align: center;
+              border-color: #333;
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+              background-color: lightsteelblue;
+              color: #333;
+          }
+          th {
+              background-color: #f2f2f2;
+              color: #333;
+              border-color: #333;
+              box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+              background-color: lightgray;
+              color: #333;
+          }
+            button {
+                padding: 10px 20px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #45a049;
+            }
+            .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                height: 80vh;
+                justify-content: center;
+                width: 80vw;
+                background-color: #f0f0f0;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+
+            }
+            i {
+                color:green;
+                margin-left: 10px;
+
+            }
+            
+    </style>
 </head>
 <body>
-    <h2>Student Marks Dashboard</h2>
-
+  <div class="container">
+    <h2>Student Marks Dashboard <i class="fas fa-chart-bar"></i></h2>
+<div class="line">
 <input type="text" id="usn" placeholder="Enter USN">
 <button onclick="loadMarks()">View</button>
+</div>
+<br>
 
 <table border="1" id="marksTable">
   <tr>
@@ -17,9 +107,10 @@
     <th>Marks</th>
   </tr>
 </table>
-
 <h3 id="total"></h3>
 <h3 id="performance"></h3>
+</div>
+
 
 <script>
 function loadMarks() {
