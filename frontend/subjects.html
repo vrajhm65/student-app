@@ -4,19 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>subjects</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style> 
+    /* card layout css styling*/
+        *{
+          margin: 0;
+          padding: 0;
+        }
+        body {
+            position: relative;
+            height: 100vh;
+            display: flex;
+        }
+        .right{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40vw;
+            height: 80vh;
+            right: 10vw;
+            top: 10vh;
+            background-color: lightgray;
+            flex-direction: column;
+            position: absolute;
+            border-top-right-radius: 15px;
+            border-bottom-right-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .left{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40vw;
+            height: 80vh;
+            left: 10vw;
+            top: 10vh;
+            background-color: #f0f0f0;
+            flex-direction: column;
+            position: absolute;
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+         input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 200px;
+        }
+        h1{
+            color: #333;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .left h2{
+            color:black;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+
+      input {
+            padding: 10px;
+            margin: 5px 0;
+            width: 200px;
+        }
+        select {
+            padding: 10px;
+            margin: 5px 0;
+            width: 220px;
+            
+        }
+
+        .left button {
+            padding: 10px 25px;
+            background-color:green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+          }
+        .left button:hover {
+            background-color:rgb(2, 110, 2) ;
+            
+        }
+          i {
+              font-size: 25px;
+              color: green;
+              margin-bottom: 20px;
+          }
+          .right h3{
+              color: #333;
+              margin-bottom: 20px;
+              font-size: 24px;
+              font-weight: bold;
+              font-family: 'Arial', sans-serif;
+          }
+          .right button {
+            padding: 8px 25px;
+            background-color:red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            margin-left: 20px;
+          }
+        .right button:hover {
+            background-color:rgb(214, 22, 22) ;
+        }
+        .left .back button{
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        height: 40px;
+        width: 60px;
+        background: #636463;
+      }
+      .left .back i{
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 8px; 
+      }
+    </style>
 </head>
 <body>
-    <h2>Manage Subjects</h2>
+  <div class="left">
+    <div class="back">
+      <button onclick="window.location.href = 'index.html'"> <i class="fas fa-arrow-left"></i> </button>
+    </div>
+    <h2>Manage Subjects <i class="fas fa-book"></i></h2>
 
 <input type="text" id="name" placeholder="Subject Name">
 <input type="text" id="code" placeholder="Subject Code">
 <button onclick="addSubject()">Add Subject</button>
+</div>
 
-<hr>
 
-<h3>Subject List</h3>
+<div class="right">
+<h3>Subject List <i class="fa-solid fa-clipboard-list"></i></h3>
 <div id="subjectList"></div>
-
+</div>
 <script>
 
 //Load subjects
