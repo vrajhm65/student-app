@@ -1,5 +1,5 @@
 const path = require("path");
-app.use(express.static(path.join(__dirname, "frontend")));
+
 
 const express = require("express");
 const mysql = require("mysql");
@@ -7,6 +7,7 @@ const cors = require("cors");
 const app = express();//craeted application
 app.use(cors());// then used middleware
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "frontend")));
 
 //db connecting
 const db = mysql.createConnection({
