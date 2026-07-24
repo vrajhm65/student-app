@@ -82,13 +82,13 @@ function login() {
 
     // 🔥 FORCE REDIRECT TEST
     if (data.message.includes("Login")) {
-      alert("Going to index page");
+      alert("Going to homepage");
       localStorage.setItem("loggedin", "true");
       localStorage.setItem("usn", usn);
-      window.location.href = "index.html";
+      window.location.href = "homepage.html";
     } 
     else if (data.message.includes("Registered")) {
-      alert("Going to profile page");
+      alert("Going to profile completion page");
       localStorage.setItem("loggedin", "true");
       localStorage.setItem("usn", usn);
       window.location.href = "profile.html";

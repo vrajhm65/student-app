@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>home-page</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            background-image: url("sam-homepg.jpg");
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            width: 100vw;
+        }
+        .head{
+            position: absolute;
+            height: 10vh;
+            width: 100vw;
+            background-color: rgba(1, 8, 27, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center; 
+            border-bottom: 1px solid white; 
+
+        }
+        .head h1{
+            color: white;
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: 1rem;
+            text-shadow: black;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .head img{
+            height: 8vh;
+            margin-right: 20px;
+            border-radius: 50%;
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);  
+        }
+        .head img:last-child{
+            margin-left: 20px;
+            height: 8vh;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+                border-radius: 50%;
+        }
+        .navbar{
+            height: 10vh;
+            width: 100vw;
+            position: absolute;
+            background-color: rgba(0, 3, 10, 0.911);
+            top: 10vh;
+            border-bottom: 1px solid white;
+            border-top: 1px solid white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .threebar{
+            position:absolute;
+            right: 2vw;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;  
+            transition: all 0.3s ease;
+        }
+        .threebar:hover{
+            color: rgba(19, 27, 139, 0.925);
+            transform: scale(0.95);
+             box-shadow: 0 6px 10px rgba(29, 40, 197, 0.925);
+
+        }
+        .options{
+            display: flex;
+            gap: 20px;
+        }
+        .options button{
+            padding: 10px 20px;
+            background-color: rgba(22, 53, 97, 0.3);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .options button:hover{
+            transform: scale(0.95);
+            box-shadow: 0 6px 10px rgba(29, 40, 197, 0.925);
+             background-color: rgba(29, 73, 134, 0.664);
+            
+        }
+        .msg{
+            position:absolute;
+            bottom: 10vh;
+            background-color: rgba(61, 61, 61, 0.918);
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            left: 20vw;
+            color: white;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 5px 45px;
+
+            
+        }
+        /*logout effect css*/
+        .logout-layer{
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: slategray;
+
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.9);
+            transition: all ease-in-out;
+        }
+        /*trigger point*/
+        .logout-layer.open{
+            opacity: 1;
+            visibility: visible;
+            transform:scale(1);
+
+        }
+        .logout-content{
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+        }
+
+        /*three bar onclick animation, drop down a page*/
+        
+        
+    </style>
+    <script>
+        const logoutbtn=document.getElementById('logoutBtn');
+        const overlay=document.getElementById('logoutoverlay');
+        const cancellogout=document.getElementById('cancellout');
+
+        logoutbtn.addEventListener('click',()=>{
+            overlay.classList.add('open');
+        });
+        cancellogout.addEventListener('click',()=>{
+            overlay.classList.remove('open');
+        });
+
+    </script>
+</head>
+<body>
+    <div class="head">
+        <img src="sam web logo.jpg" >
+    <h1>SAMBHRAM INSTITUTE OF TECHNOLOGY</h1>
+       <img src="sam 25yr.jpeg">
+    </div>
+    <div class="navbar">
+        <div class="threebar">
+           <i class="fa-solid fa-bars"></i>
+        </div>
+        <div class="options">
+           <button onclick="window.location.href='index.html'">Student</button>
+           <button onclick="window.location.href='subjects.html'">Subjects</button>
+           <button onclick="window.location.href='view-attendance.html'">View Attendance</button>
+           <button onclick="window.location.href='view-marks.html'">View Marks</button>
+           <button onclick="window.location.href='profile-dashboard.html'">Dashboard</button>
+           <button onclick="window.location.href='faculty.html'">Faculty panel</button>
+           <button onclick="window.location.href='login.html'">logout</button>
+          
+           
+
+
+        </div>
+       
+    </div>
+     <!--logout effect-->
+        <div id="logoutoverlay" class="logout-layer">
+            <div class="logoutcontent">
+                <h2>Logging out..!</h2>
+                <p>Are you sure?</p>
+                <button id="confirmlout">Yes</button>
+                <button id="cancellout">Cancel</button>
+
+            </div>
+        </div>
+
+    <div class="msg">
+        <h3 > WELCOME TO SAMBHARM INSTITUTE OF TECHNOLOGY | STUDENT DEVELOPED WEBSITE</h3>
+
+    </div>
+    
+</body>
+</html>

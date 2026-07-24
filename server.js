@@ -1,8 +1,10 @@
+const path = require("path");
+app.use(express.static(path.join(__dirname, "frontend")));
 
 const express = require("express");
 const mysql = require("mysql");
 const cors = require("cors");
-const app = express();//craeted app
+const app = express();//craeted application
 app.use(cors());// then used middleware
 app.use(express.json());
 
@@ -24,7 +26,7 @@ db.connect(err=>{
 
 //test route
 app.get("/",(req ,res)=>{
-    res.send("server working");  // this 3 line  part creates rute (url)
+    res.sendFile(path.join(__dirname, "frontend", "login.html"));
 });
 //start server
 app.listen(3000,()=>{
