@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login page</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .mainbg{
+            position: relative;
+            background-color: pink;
+            width: 100vw;
+            height: 100vh;
+            
+        }
+        .mainbg img{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            background-size: cover;
+        }
+        .layout{
+            background-color: rgba(141, 49, 141, 0.30);
+            display: flex;
+            position: absolute;
+            justify-content: center;
+            align-items: center;
+            top: 20vh;
+            height: 60vh;
+            width: 50vw;
+            left: 25vw;
+            border-radius: 20px;
+            box-shadow: -3px 4px 10px 3px rgb(39, 7, 39);
+            
+        }
+        .name{
+             display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top:20vh;
+            height: 6vh;
+            width: 15vw;
+            left: 18vw;    
+        }
+        .name input{
+            color: white;
+           background-color: rgb(43, 22, 43);
+           padding: 10px 15px ;
+           border-radius: 25px;
+           border: none;
+           font-family: Arial, Helvetica, sans-serif;
+           font-size: 1rem;
+        }
+        .name label{
+            font-size: 1.5rem;
+            color: rgb(39, 7, 39);
+            font-weight: bold;
+            padding-right:4vw ;
+            font-family: Arial, Helvetica, sans-serif;  
+        }
+        .num{
+             display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top:30vh;
+            height: 6vh;
+            width: 15vw;
+            left: 18vw;    
+        }
+         .num input{
+            color: white;
+           background-color: rgb(43, 22, 43);
+           padding: 10px 15px ;
+           border-radius: 25px;
+           border: none;
+           font-family: Arial, Helvetica, sans-serif;
+           font-size: 1rem;
+        }
+        .num label{
+            font-size: 1.5rem;
+            color: rgb(39, 7, 39);
+            font-weight: bold;
+            padding-right:1.5vw ;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        .submit{
+            height: 5vh;
+            width: 5vw;
+            display: flex;
+            position: absolute;
+            justify-content: center;
+            align-items: center;
+            left:22.5vw ; 
+            bottom: 10vh;
+        }
+        .submit input{
+           color: blueviolet;
+           background-color: rgb(39, 7, 39);
+           padding: 10px 30px ;
+           border-radius: 25px;
+           border: none;
+           font-family: Arial, Helvetica, sans-serif;
+           font-size: 1rem;
+        }
+        .submit input:hover{
+            color: white;
+        }
+        .layout h1{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 6vh;
+            left: 21vw;
+            color: rgb(39, 7, 39);
+            font-family:Arial, Helvetica, sans-serif;
+        }
+        
+
+       
+    </style>
+</head>
+<body>
+    <div class="mainbg">
+        <img src="loginbg.png" alt="">
+        <div class="layout">
+            <h1> LOGIN </h1>
+        <form onsubmit=" return submitform()">
+        <div class="name">
+            <label for="">NAME</label>
+            <input type="text" id="username" required>
+            <span style="color: brown;" id="msg1"></span>
+        </div>
+        <div class="num">
+        <label for="">NUMBER</label>
+        <input type="number" id="usernumber" required>
+        <span style="color: brown;" id="msg2"></span>
+        </div>
+        <div class="submit">
+            <input  type="submit" style="cursor: pointer;">
+        </div>
+        
+        </form>
+        </div>
+    </div>
+</body>
+<script>
+    
+    function submitform(){
+        let username=document.getElementById("username").value;
+        let usernumber=document.getElementById("usernumber").value;
+        if(username==""){
+            document.getElementById("msg1").innerHTML="kindly enter the name"
+            return false;
+        }
+        else{
+            document.getElementById("msg1").innerHTML=""
+        }
+        if(isNaN(usernumber)){
+
+        }
+        else if(usernumber==""){
+            document.getElementById("msg2").innerHTML="kindly enter the number"
+            return false; 
+        }
+        else{
+           
+            document.getElementById("msg2").innerHTML=""
+        }
+        alert("your form is submitted")
+        return true;
+       //return true means function ends here //
+
+    }
+</script>
+</html>

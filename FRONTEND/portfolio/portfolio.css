@@ -1,0 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #080b10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background: #1f242d;
+    width: 90%;
+    max-width: 1100px;
+    padding: 40px 60px;
+    border-radius: 40px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 700;
+    color: #fff;
+}
+
+.logo span { color: rgb(241, 47, 73); }
+
+.nav-links {
+    list-style: none;
+    display: flex;
+}
+
+.nav-links li { margin-left: 30px; }
+
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a.active, .nav-links a:hover {
+    color: rgb(241, 47, 73);
+}
+
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hero-text {
+    max-width: 500px;
+    color: #fff;
+}
+
+.hero-text h3 {
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.hero-text h1 {
+    font-size: 52px;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.hero-text h3 span { color:rgb(241, 47, 73); }
+
+.hero-text p {
+    font-size: 14px;
+    margin-top: 20px;
+    line-height: 1.6;
+    color: #ccc;
+}
+
+.social-icons {
+    margin: 25px 0;
+}
+
+.social-icons a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 2px solid rgb(241, 47, 73);
+    border-radius: 50%;
+    color: rgb(241, 47, 73);
+    text-decoration: none;
+    margin-right: 15px;
+    transition: 0.5s;
+}
+
+.social-icons a:hover {
+    background: rgb(241, 47, 73);
+    color: #1f242d;
+    box-shadow: 0 0 15px rgb(241, 47, 73);
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    background: rgb(241, 47, 73);
+    border-radius: 40px;
+    color: #1f242d;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 0 10px rgb(241, 47, 73);
+    transition: 0.3s;
+}
+
+.btn:hover { box-shadow: none; }
+
+.hero-img {
+    position: relative;
+    width: 350px;
+    height: 350px;
+}
+
+.hexagon {
+    width: 100%;
+    height: 100%;
+    background: rgb(241, 47, 73);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    filter: drop-shadow(0 0 20px rgb(241, 47, 73));
+}
+
+.hexagon img {
+    width: 95%;
+    height: 95%;
+    object-fit: cover;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    background: #1f242d;
+}
