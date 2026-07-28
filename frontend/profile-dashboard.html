@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>student-profile-dashboard</title>
+    <style>
+      *{
+        margin: 0;
+        padding: 0;
+      }
+      body{
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-image:url("sam-bg.jpeg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    
+      }
+      .main{
+        height: 80vh;
+        width: 80vw;
+        position:absolute;
+        top: 10vh;
+        left: 10vw;
+        background-color: rgba(100, 100, 100, 0.9);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.8);
+
+      }
+      .main h2{
+        color:black;
+        margin-bottom: 20px;
+        top: 5vh;
+        position:absolute;
+        font-size: 30px;
+      }
+      .main input{
+        padding: 10px;
+        margin: 5px 0;
+        width: 200px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        position: absolute;
+        top: 15vh;
+        left: 26vw;
+        margin-bottom: 20px;
+      }
+      .main button{
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        position: absolute;
+        top: 16vh;
+        left: 45vw;
+        
+      }
+      h2 i{
+        color:black;  
+
+      }
+     .sec{
+
+      font-size: 15px;
+      height: 50vh;
+      width: 70vw;
+      background-color: rgba(255, 255, 255, 0.8);
+      top: 25vh;
+      position: absolute;
+      border-radius: 15px;
+     }
+     .sec h3{
+        color: #333;
+        margin-bottom: 5px;
+        
+        
+     }
+
+      
+    </style>
+</head>
+<body>
+
+  <div class="main">
+
+    <h2>Student Profile Dashboard <i class="fas fa-user"></i></h2>
+
+<input type="text" id="usn" placeholder="Enter USN">
+<button onclick="loadProfile()">Load Profile</button>
+   <div class="sec">
+<h3> 1) Student Information</h3>
+<h3 id="studentInfo"></h3>
+<br>
+
+<h3> 2) Attendance</h3>
+<h3 id="attendance"></h3>
+<br>
+<h3> 3) Marks</h3>
+<h3 id="marks"></h3>
+<br>
+<h3 > 4) Performance Summary</h3>
+<h3 id="summary"></h3>
+   </div>
+
+</div>
+<script>
+function loadProfile() {
+  const usn = document.getElementById("usn").value;
+
+  fetch(`http://localhost:3000/student-profile/${usn}`)
+    .then(res => res.json())
+    .then(data => {
+
+      // 👤 Student info
+      document.getElementById("studentInfo").innerText =
+        `Name: ${data.student.name} | USN: ${data.student.usn}`;
+
+      // 📊 Attendance calculation
+      let attendanceMap = {};
+      let totalMap = {};
+
+      data.attendance.forEach(a => {
+        if (!attendanceMap[a.subject]) {
+          attendanceMap[a.subject] = 0;
+          totalMap[a.subject] = 0;
+        }
+
+        if (a.status === "Present") {
+          attendanceMap[a.subject]++;
+        }
+
+        totalMap[a.subject]++;
+      });
+
+      let attendanceHTML = "";
+
+      for (let sub in attendanceMap) {
+        
+        let percent = (attendanceMap[sub] / totalMap[sub]) * 100;
+
+        attendanceHTML += `
+          <p>
+            ${sub}: ${percent.toFixed(2)}%
+            ${percent < 75 ? "⚠️ Low" : "✅"}
+          </p>
+        `;
+      }
+
+      document.getElementById("attendance").innerHTML = attendanceHTML;
+
+      // 📝 Marks
+      let marksHTML = "";
+      let total = 0;
+
+      data.marks.forEach(m => {
+        marksHTML += `<p>${m.subject}: ${m.marks}</p>`;
+        total += Number(m.marks);
+      });
+
+      document.getElementById("marks").innerHTML = marksHTML;
+
+      // 🏆 Summary
+      let performance = "";
+
+      if (total >= 250) performance = "Excellent 🏆";
+      else if (total >= 180) performance = "Good 👍";
+      else performance = "Needs Improvement ⚠️";
+
+      document.getElementById("summary").innerText =
+        `Total Marks: ${total} | Performance: ${performance}`;
+    });
+}
+</script>
+</body>
+</html>
