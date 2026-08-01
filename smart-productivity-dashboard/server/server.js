@@ -5,4 +5,6 @@ app.get("/", (req, res)=>{
     res.send("Smart Productivity Dashboard is running")
 });
 res.send()
-app.listen()
+app.listen(PORT, () => {
+    console.log(`server is running on http://localhost:${port}`)
+});
