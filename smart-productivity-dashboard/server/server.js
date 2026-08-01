@@ -4,7 +4,7 @@ const PORT = 5000; // choosing port
 app.get("/", (req, res)=>{
     res.send("Smart Productivity Dashboard Backend is running")
 });
-res.send()
+
 app.listen(PORT, () => {
     console.log(`server is running on http://localhost:${PORT}`)
 });
