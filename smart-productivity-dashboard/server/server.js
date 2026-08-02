@@ -13,9 +13,8 @@ app.get("/", (req, res)=>{
     res.send("Smart Productivity Dashboard Backend is running")
 });
 
-app.get("/api/tasks", (req, res)=> {
-    res.json(tasks);      // here we have used res.json cuz we are sending json data not plain text
-});
+const taskRoutes = require("./routes/taskRoutes");
+app.use("/api/tasks", taskRoutes);
 
 app.post("/api/tasks", (req, res)=> {
     const newTask = req.body;
