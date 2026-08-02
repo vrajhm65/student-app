@@ -14,7 +14,7 @@ app.get("/", (req, res)=>{
 });
 
 app.get("/api/tasks", (req, res)=> {
-    res.json(tasks);
+    res.json(tasks);      // here we have used res.json cuz we are sending json data not plain text
 });
 
 app.listen(PORT, () => {
