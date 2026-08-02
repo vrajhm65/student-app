@@ -7,7 +7,7 @@ const getTasks=(req, res) =>{
     res.json(tasks);
 };
 
-module.express={
+module.exports={
     getTasks
 };
 
