@@ -13,6 +13,10 @@ app.get("/", (req, res)=>{
     res.send("Smart Productivity Dashboard Backend is running")
 });
 
+app.get("/api/tasks", (req, res)=> {
+    res.json(tasks);
+});
+
 app.listen(PORT, () => {
     console.log(`server is running on http://localhost:${PORT}`)
 });
