@@ -17,6 +17,14 @@ app.get("/api/tasks", (req, res)=> {
     res.json(tasks);      // here we have used res.json cuz we are sending json data not plain text
 });
 
+app.post("/api/tasks", (req, res)=> {
+    const newTask = req.body;
+    tasks.push(newTask);
+    res.status(201).json({message:"Task Added Succesfully",
+        task: newTask
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`server is running on http://localhost:${PORT}`);
 });
