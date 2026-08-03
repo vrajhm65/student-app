@@ -49,10 +49,27 @@ const updateTask=(req, res)=>{
 
 };
 
+const deleteTask =(req, res)=>{
+    const taskId = Number(req.params.id);
+    const index=tasks.findIndex(task=> task.id ===taskId);
+
+    if(index === -1){
+        return res.staus(404).jsoon({
+            Message: "task not found"
+        });
+    }
+    tasks.splice(index, 1);
+    res.json({
+        messsage: "task deleted succesfully"
+    });
+};
+
 
 module.exports={
     getTasks,
     getTaskById,
-    createTask
+    createTask,
+    updateTask,
+    deleteTask
 };
 
