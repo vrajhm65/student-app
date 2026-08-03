@@ -30,12 +30,23 @@ const createTask=(req, res)=>{
 
 const updateTask=(req, res)=>{
 
-    const taskId=req.body;
-    tasks.push(newTask);
-    res.staus(201).json({
-        message: "task added succesfully",
-        task: newTask
+   const taskId=Number(req.params.id);
+   const task = tasks.find(task=> task.id ===taskId);
+
+   if(!task){
+    return res.status(404).json({
+        message:"TASK NOT FOUND"
     });
+   }
+   task.title=req.body.title ?? task.title; // if new title is provided updte it
+   task.completed= req.body.completed ?? task.completed;
+
+   res.json({
+    message:"Task updated succesfully",
+    task
+
+   });
+
 };
 
 
