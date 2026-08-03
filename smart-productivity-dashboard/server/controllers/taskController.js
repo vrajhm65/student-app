@@ -27,6 +27,18 @@ const createTask=(req, res)=>{
         task: newTask
     });
 };
+
+const updateTask=(req, res)=>{
+
+    const taskId=req.body;
+    tasks.push(newTask);
+    res.staus(201).json({
+        message: "task added succesfully",
+        task: newTask
+    });
+};
+
+
 module.exports={
     getTasks,
     getTaskById,
