@@ -38,7 +38,7 @@ const updateTask=(req, res)=>{
         message:"TASK NOT FOUND"
     });
    }
-   task.title=req.body.title ?? task.title; // if new title is provided updte it
+   task.title=req.body.title ?? task.title; // if new title is provided updte it .or keep old one
    task.completed= req.body.completed ?? task.completed;
 
    res.json({
