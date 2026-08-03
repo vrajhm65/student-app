@@ -7,6 +7,7 @@ const getTasks=(req, res) =>{
     res.json(tasks);
 };
 const getTaskById =(req, res)=>{
+    const newTask = req.body;
     const taskId = Number(req.params.id); // rreq params id reffers to "5" if url is /api/tasks/id. notice its a string and convert into number
     const task = tasks.find(task => task.id ===taskId); // searches the array and returns first matching task
 
