@@ -7,7 +7,7 @@ const getTasks=(req, res) =>{
     res.json(tasks);
 };
 const getTaskById =(req, res)=>{
-    const taskId = Number(req.params.id); // 
+    const taskId = Number(req.params.id); // rreq params id reffers to 5 if url is /api/tasks/id
     const task = tasks.find(task => task.id ===taskId);
 
     if(!task){
