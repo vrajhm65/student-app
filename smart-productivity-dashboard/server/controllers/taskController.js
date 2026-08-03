@@ -8,6 +8,12 @@ const getTasks=(req, res) =>{
 };
 const getTaskById =(req, res)=>{
     const newTask = req.body;
+    tasks.push(newTask);
+    res.status(202).json({
+        message:"Task added succesfully",
+        task: newTask
+    });
+
     const taskId = Number(req.params.id); // rreq params id reffers to "5" if url is /api/tasks/id. notice its a string and convert into number
     const task = tasks.find(task => task.id ===taskId); // searches the array and returns first matching task
 
@@ -21,6 +27,7 @@ const getTaskById =(req, res)=>{
 }
 module.exports={
     getTasks,
-    getTaskById
+    getTaskById,
+    createTask
 };
 
