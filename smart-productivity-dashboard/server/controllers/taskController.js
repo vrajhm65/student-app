@@ -9,7 +9,7 @@ const getTasks=(req, res) =>{
 const getTaskById =(req, res)=>{
     const newTask = req.body;
     tasks.push(newTask);
-    res.status(202).json({
+    res.status(201).json({
         message:"Task added succesfully",
         task: newTask
     });
