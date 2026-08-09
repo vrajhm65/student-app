@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
 import DailyPlanner from "../components/DailyPlanner";
+import DailyPanel from "../components/DailyPanel";
 
 function Dashboard() {
   return (
