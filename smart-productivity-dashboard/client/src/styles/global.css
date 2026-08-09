@@ -47,25 +47,64 @@ button {
   gap: 8px;
 }
 
-.sidebar-nav button {
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
   color: #cbd5e1;
+
   text-align: left;
   padding: 12px;
   border-radius: 8px;
+
+  transition: 0.2s;
 }
 
-.sidebar-nav button:hover {
+.sidebar-item span {
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-item:hover {
   background: #1f2937;
   color: white;
 }
 
-.sidebar-bottom {
-  margin-top: auto;
+.sidebar-item.active {
+  background: #1f2937;
+  color: white;
 }
 
-.sidebar-bottom button {
+.help-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
   color: #cbd5e1;
+
   padding: 12px;
+  border-radius: 8px;
+
+  transition: 0.2s;
+}
+
+.help-button:hover {
+  background: #1f2937;
+  color: white;
+}
+
+.help-button span {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #64748b;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Main */
