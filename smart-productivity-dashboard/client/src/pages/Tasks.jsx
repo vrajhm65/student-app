@@ -5,6 +5,7 @@ function Tasks() {
     fetch("http://localhost:5000/api/tasks")
       .then((response) => response.json())
       .then((data) => {
+        console.log("tasks recived from backend", data);
         setTasks(data);
       })
       .catch((error) => {
