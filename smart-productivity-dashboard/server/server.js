@@ -1,10 +1,10 @@
 const express = require("express");  // importing express library
-
-const taskRoutes = require("./routes/taskRoutes");
-
+const cors = require("cors");
 const app = express(); // creating express app
+app.use(cors());
 
 const PORT = 5000; // choosing port
+const taskRoutes = require("./routes/taskRoutes");
 
 app.use(express.json()); // express needs to understand the json .so it acts as a translator
 app.use("/api/tasks", taskRoutes);
