@@ -17,43 +17,48 @@ function Tasks() {
       <p className="section-label">TASKS</p>
       <h1>All Tasks</h1>
       <p>Manage everything you need to accomplish.</p>
-        <div className="add-task">
+        <form
+    className="add-task"
+    onSubmit={async (event) => {
+        event.preventDefault();
+
+        const input = event.target.elements.taskInput;
+        const title = input.value.trim();
+
+        if (!title) return;
+
+        const response = await fetch("http://localhost:5000/api/tasks", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: title,
+                completed: false
+            })
+        });
+
+        const result = await response.json();
+
+        setTasks((previousTasks) => [
+            ...previousTasks,
+            result.task
+        ]);
+
+        input.value = "";
+    }}
+>
     <input
         type="text"
+        name="taskInput"
         placeholder="Enter a new task"
-        id="taskInput"
     />
 
-    <button
-        onClick={async () => {
-            const input = document.getElementById("taskInput");
-
-            if (!input.value.trim()) return;
-
-            const response = await fetch("http://localhost:5000/api/tasks", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    title: input.value,
-                    completed: false
-                })
-            });
-
-            const result = await response.json();
-
-            setTasks((previousTasks) => [
-                ...previousTasks,
-                result.task
-            ]);
-
-            input.value = "";
-        }}
-    >
+    <button type="submit">
         Add Task
     </button>
-</div>
+</form>
+
       <div className="task-list">
         {tasks.map((task) => (
           <div className="task-card" key={task.id}>
