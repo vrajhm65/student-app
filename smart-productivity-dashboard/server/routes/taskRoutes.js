@@ -6,6 +6,6 @@ const{ getTasks, getTaskById, createTask, updateTask, deleteTask }= require("../
 router.get("/",getTasks); // routes home path
 router.get("/:id",getTaskById);
 router.post("/",createTask);
-router.post("/:id",updateTask);
-router.post("/:id", deleteTask);
+router.put("/:id",updateTask);
+router.delete("/:id", deleteTask);
 module.exports=router; //exports router to server.js
