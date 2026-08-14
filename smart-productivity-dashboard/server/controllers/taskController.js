@@ -22,9 +22,9 @@ const getTaskById =(req, res)=>{
 const createTask=(req, res)=>{
     const newtask=req.body;
     tasks.push(newtask);
-    res.staus(201).json({
+    res.status(201).json({
         message: "task added succesfully",
-        task: newTask
+        task: newtask
     });
 };
 
