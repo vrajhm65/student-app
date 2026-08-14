@@ -65,30 +65,39 @@ function Tasks() {
             <div className="task-info">
               <h4>{task.title}</h4>
             </div>
-
-            <button
+<button
+    type="button"
     onClick={async () => {
-        const response = await fetch(
-            `http://localhost:5000/api/tasks/${task.id}`,
-            {
-                method: "DELETE"
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/tasks/${task.id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error("Delete failed:", result);
+                return;
             }
-        );
 
-        if (!response.ok) {
-            console.error("Failed to delete task");
-            return;
+            console.log("Delete successful:", result);
+
+            setTasks((previousTasks) =>
+                previousTasks.filter(
+                    (currentTask) => currentTask.id !== task.id
+                )
+            );
+        } catch (error) {
+            console.error("Error deleting task:", error);
         }
-
-        setTasks((previousTasks) =>
-            previousTasks.filter(
-                (currentTask) => currentTask.id !== task.id
-            )
-        );
     }}
 >
     Delete
 </button>
+            
           </div>
         ))}
       </div>
