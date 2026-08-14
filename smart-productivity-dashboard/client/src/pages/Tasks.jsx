@@ -65,6 +65,30 @@ function Tasks() {
             <div className="task-info">
               <h4>{task.title}</h4>
             </div>
+
+            <button
+    onClick={async () => {
+        const response = await fetch(
+            `http://localhost:5000/api/tasks/${task.id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (!response.ok) {
+            console.error("Failed to delete task");
+            return;
+        }
+
+        setTasks((previousTasks) =>
+            previousTasks.filter(
+                (currentTask) => currentTask.id !== task.id
+            )
+        );
+    }}
+>
+    Delete
+</button>
           </div>
         ))}
       </div>
