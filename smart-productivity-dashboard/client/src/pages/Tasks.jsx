@@ -1,3 +1,41 @@
+<div className="add-task">
+    <input
+        type="text"
+        placeholder="Enter a new task"
+        id="taskInput"
+    />
+
+    <button
+        onClick={async () => {
+            const input = document.getElementById("taskInput");
+
+            if (!input.value.trim()) return;
+
+            const response = await fetch("http://localhost:5000/api/tasks", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: input.value,
+                    completed: false
+                })
+            });
+
+            const result = await response.json();
+
+            setTasks((previousTasks) => [
+                ...previousTasks,
+                result.task
+            ]);
+
+            input.value = "";
+        }}
+    >
+        Add Task
+    </button>
+</div>
+
 import { useEffect, useState } from "react";
 function Tasks() {
   const [tasks, setTasks] = useState([]);
