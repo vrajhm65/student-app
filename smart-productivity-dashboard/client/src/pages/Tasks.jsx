@@ -103,81 +103,81 @@ function Tasks() {
 </div>
 <div className="task-actions">
 
-            {/* EDIT */}
-            <button
-                type="button"
-                onClick={async () => {
-                    const newTitle = prompt("Edit task:", task.title);
+    {/* EDIT */}
+    <button
+        type="button"
+        onClick={async () => {
+            const newTitle = prompt("Edit task:", task.title);
 
-                    if (!newTitle || !newTitle.trim()) return;
+            if (!newTitle || !newTitle.trim()) return;
 
-                    const response = await fetch(
-                        `http://localhost:5000/api/tasks/${task.id}`,
-                        {
-                            method: "PUT",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                title: newTitle.trim()
-                            })
-                        }
-                    );
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        console.error("Update failed:", result);
-                        return;
-                    }
-
-                    setTasks((previousTasks) =>
-                        previousTasks.map((currentTask) =>
-                            currentTask.id === task.id
-                                ? result.task
-                                : currentTask
-                        )
-                    );
-                }}
-            >
-                Edit
-            </button>
-</div>
-
-<button
-    type="button"
-    onClick={async () => {
-        try {
             const response = await fetch(
                 `http://localhost:5000/api/tasks/${task.id}`,
                 {
-                    method: "DELETE"
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        title: newTitle.trim()
+                    })
                 }
             );
 
             const result = await response.json();
 
             if (!response.ok) {
-                console.error("Delete failed:", result);
+                console.error("Update failed:", result);
                 return;
             }
 
-            console.log("Delete successful:", result);
-
             setTasks((previousTasks) =>
-                previousTasks.filter(
-                    (currentTask) => currentTask.id !== task.id
+                previousTasks.map((currentTask) =>
+                    currentTask.id === task.id
+                        ? result.task
+                        : currentTask
                 )
             );
-        } catch (error) {
-            console.error("Error deleting task:", error);
-        }
-    }}
->
-    Delete
-</button>
-            
-          </div>
+        }}
+    >
+        Edit
+    </button>
+
+    {/* DELETE */}
+    <button
+        type="button"
+        onClick={async () => {
+            try {
+                const response = await fetch(
+                    `http://localhost:5000/api/tasks/${task.id}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error("Delete failed:", result);
+                    return;
+                }
+
+                console.log("Delete successful:", result);
+
+                setTasks((previousTasks) =>
+                    previousTasks.filter(
+                        (currentTask) => currentTask.id !== task.id
+                    )
+                );
+            } catch (error) {
+                console.error("Error deleting task:", error);
+            }
+        }}
+    >
+        Delete
+    </button>
+
+</div>
         ))}
       </div>
     </div>
