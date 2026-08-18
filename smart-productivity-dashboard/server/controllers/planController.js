@@ -11,7 +11,8 @@ const createPlan = (req, res) => {
             : 1,
         time: req.body.time,
         title: req.body.title,
-        description: req.body.description
+        description: req.body.description,
+        completed: false    
     };
 
     plans.push(newPlan);
@@ -42,8 +43,31 @@ const deletePlan = (req, res) => {
     });
 };
 
+const updatePlan = (req, res) => {
+    const planId = Number(req.params.id);
+
+    const plan = plans.find(
+        (currentPlan) => currentPlan.id === planId
+    );
+
+    if (!plan) {
+        return res.status(404).json({
+            message: "Plan not found"
+        });
+    }
+
+    plan.completed =
+        req.body.completed ?? plan.completed;
+
+    res.json({
+        message: "Plan updated successfully",
+        plan
+    });
+};
+
 module.exports = {
     getPlans,
     createPlan,
-    deletePlan
-};
+    deletePlan,
+    updatePlan
+}
