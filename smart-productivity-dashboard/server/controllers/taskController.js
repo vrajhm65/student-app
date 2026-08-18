@@ -20,7 +20,10 @@ const getTaskById =(req, res)=>{
     res.json(task);
 };
 const createTask=(req, res)=>{
-    const newtask=req.body;
+    const newtask={ id:tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1, 
+        title: req.body.title,
+        completed:  false
+    };
     tasks.push(newtask);
     res.status(201).json({
         message: "task added succesfully",
