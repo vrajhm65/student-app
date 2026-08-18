@@ -1,26 +1,7 @@
 import { useState } from "react";
 
 function DailyPlanner() {
-  const [plans, setPlans] = useState([
-    {
-      id: 1,
-      time: "09:00",
-      title: "Morning Study",
-      description: "Focus session",
-    },
-    {
-      id: 2,
-      time: "14:00",
-      title: "Project Development",
-      description: "MERN Dashboard",
-    },
-    {
-      id: 3,
-      time: "18:00",
-      title: "Review & Planning",
-      description: "Prepare for tomorrow",
-    },
-  ]);
+  const [plans, setPlans] = useState([ ]);
 
   const [showForm, setShowForm] = useState(false);
   const [newPlan, setNewPlan] = useState({
