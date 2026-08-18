@@ -56,8 +56,10 @@ const updatePlan = (req, res) => {
         });
     }
 
-    plan.completed =
-        req.body.completed ?? plan.completed;
+    plan.title = req.body.title ?? plan.title;
+    plan.time = req.body.time ?? plan.time;
+    plan.description = req.body.description ?? plan.description;
+    plan.completed = req.body.completed ?? plan.completed;
 
     res.json({
         message: "Plan updated successfully",
