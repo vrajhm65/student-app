@@ -99,7 +99,47 @@ function Tasks() {
 
     <h4>{task.title}</h4>
 
-    
+    <div className="task-actions">
+
+            {/* EDIT */}
+            <button
+                type="button"
+                onClick={async () => {
+                    const newTitle = prompt("Edit task:", task.title);
+
+                    if (!newTitle || !newTitle.trim()) return;
+
+                    const response = await fetch(
+                        `http://localhost:5000/api/tasks/${task.id}`,
+                        {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                title: newTitle.trim()
+                            })
+                        }
+                    );
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        console.error("Update failed:", result);
+                        return;
+                    }
+
+                    setTasks((previousTasks) =>
+                        previousTasks.map((currentTask) =>
+                            currentTask.id === task.id
+                                ? result.task
+                                : currentTask
+                        )
+                    );
+                }}
+            >
+                Edit
+            </button>
 </div>
 
 <button
@@ -139,6 +179,7 @@ function Tasks() {
         ))}
       </div>
     </div>
+    
   );
 }
 export default Tasks;
