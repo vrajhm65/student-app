@@ -8,11 +8,7 @@ const taskRoutes = require("./routes/taskRoutes");
 
 app.use(express.json()); // express needs to understand the json .so it acts as a translator
 app.use("/api/tasks", taskRoutes);
-let tasks=[
-    {
-    
-}
-];
+
 app.get("/", (req, res)=>{
     res.send("Smart Productivity Dashboard Backend is running")
 });

@@ -1,6 +1,6 @@
-let tasks = [{
+let tasks = [
 
-}];
+];
 const getTasks=(req, res) =>{
     res.json(tasks);
 };
