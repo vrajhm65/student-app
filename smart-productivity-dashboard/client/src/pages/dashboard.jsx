@@ -4,7 +4,9 @@ import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
 import DailyPlanner from "../components/DailyPlanner";
 import DailyPanel from "../components/DailyPanel";
-import { useState, useEffect } from "react";  
+
+import { useState, useEffect } from "react"; 
+import { Link } from "react-router-dom"; 
 
 function Dashboard() {
     const [tasks, setTasks] = useState([]);
@@ -33,7 +35,7 @@ function Dashboard() {
 
 
   return (
-    <div className="app-layout">
+    < div className="app-layout">
       <Sidebar />
 
       <div className="main-area">
@@ -103,9 +105,9 @@ function Dashboard() {
                   <h3>Today's Tasks</h3>
                 </div>
 
-                <button className="view-button">
-                  View all
-                </button>
+                <Link to="/tasks" className="view-button">
+                   View all
+                </Link>
               </div>
 
               {tasks.map((task) => (
