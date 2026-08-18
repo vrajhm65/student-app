@@ -195,10 +195,100 @@ const [editingPlan, setEditingPlan] = useState({
 
     <span>{plan.time}</span>
 
-    <div>
-      <h4>{plan.title}</h4>
-      <p>{plan.description}</p>
-    </div>
+    {editingPlanId === plan.id ? (
+  <div className="planner-edit-form">
+
+    <input
+      type="time"
+      value={editingPlan.time}
+      onChange={(event) =>
+        setEditingPlan({
+          ...editingPlan,
+          time: event.target.value,
+        })
+      }
+    />
+
+    <input
+      type="text"
+      value={editingPlan.title}
+      onChange={(event) =>
+        setEditingPlan({
+          ...editingPlan,
+          title: event.target.value,
+        })
+      }
+    />
+
+    <input
+      type="text"
+      value={editingPlan.description}
+      onChange={(event) =>
+        setEditingPlan({
+          ...editingPlan,
+          description: event.target.value,
+        })
+      }
+    />
+
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/plans/${plan.id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                time: editingPlan.time,
+                title: editingPlan.title.trim(),
+                description: editingPlan.description.trim(),
+              }),
+            }
+          );
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            console.error("Edit plan failed:", result);
+            return;
+          }
+
+          setPlans((previousPlans) =>
+            previousPlans.map((currentPlan) =>
+              currentPlan.id === plan.id
+                ? result.plan
+                : currentPlan
+            )
+          );
+
+          setEditingPlanId(null);
+
+        } catch (error) {
+          console.error("Error editing plan:", error);
+        }
+      }}
+    >
+      Save
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setEditingPlanId(null)}
+    >
+      Cancel
+    </button>
+
+  </div>
+) : (
+  <div>
+    <h4>{plan.title}</h4>
+    <p>{plan.description}</p>
+  </div>
+)}
 
 <button
   type="button"
