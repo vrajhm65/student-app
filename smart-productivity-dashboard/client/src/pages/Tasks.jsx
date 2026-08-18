@@ -12,6 +12,7 @@ function Tasks() {
         console.error("Error fetching tasks:", error);
       });
   }, []);
+  
   return (
     <div className="simple-page">
       <p className="section-label">TASKS</p>
