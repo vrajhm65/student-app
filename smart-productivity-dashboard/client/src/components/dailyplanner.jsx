@@ -10,33 +10,53 @@ function DailyPlanner() {
     description: "",
   });
 
-  const addPlan = (event) => {
+  const addPlan = async (event) => {
     event.preventDefault();
 
     if (!newPlan.time || !newPlan.title.trim()) {
-      return;
+        return;
     }
 
-    const plan = {
-      id: Date.now(),
-      time: newPlan.time,
-      title: newPlan.title.trim(),
-      description: newPlan.description.trim(),
-    };
+    try {
+        const response = await fetch(
+            "http://localhost:5000/api/plans",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    time: newPlan.time,
+                    title: newPlan.title.trim(),
+                    description: newPlan.description.trim(),
+                }),
+            }
+        );
 
-    setPlans((previousPlans) => [
-      ...previousPlans,
-      plan,
-    ]);
+        const result = await response.json();
 
-    setNewPlan({
-      time: "",
-      title: "",
-      description: "",
-    });
+        if (!response.ok) {
+            console.error("Add plan failed:", result);
+            return;
+        }
 
-    setShowForm(false);
-  };
+        setPlans((previousPlans) => [
+            ...previousPlans,
+            result.plan,
+        ]);
+
+        setNewPlan({
+            time: "",
+            title: "",
+            description: "",
+        });
+
+        setShowForm(false);
+
+    } catch (error) {
+        console.error("Error adding plan:", error);
+    }
+};
 
   return (
     <section className="daily-planner">
