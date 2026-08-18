@@ -54,9 +54,9 @@ function Dashboard() {
               </p>
             </div>
 
-            <button className="primary-button">
-              + Add Task
-            </button>
+              < Link to="/tasks" className="primary-button">
+                + Add Task
+              </Link>
           </section>
 
 
