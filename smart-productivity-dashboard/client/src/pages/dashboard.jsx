@@ -108,23 +108,14 @@ function Dashboard() {
                 </button>
               </div>
 
+              {tasks.map((task) => (
               <TaskCard
-                title="Complete React dashboard"
-                time="10:00 AM"
-                completed={true}
-              />
-
-              <TaskCard
-                title="Study MongoDB"
-                time="02:00 PM"
-                completed={false}
-              />
-
-              <TaskCard
-                title="Practice JavaScript"
-                time="05:00 PM"
-                completed={false}
-              />
+                key={task.id}
+                title={task.title}
+                time="Today"
+                completed={task.completed}
+               />
+              ))}
 
             </div>
 
