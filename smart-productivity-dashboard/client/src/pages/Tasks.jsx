@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 function Tasks() {
   const [tasks, setTasks] = useState([]);
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editingTitle, setEditingTitle] = useState("");
 
   // Get all tasks
   useEffect(() => {
