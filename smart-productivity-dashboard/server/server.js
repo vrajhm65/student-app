@@ -10,9 +10,7 @@ app.use(express.json()); // express needs to understand the json .so it acts as 
 app.use("/api/tasks", taskRoutes);
 let tasks=[
     {
-    id: 1,
-    title: "learn express",
-    completed:false
+    
 }
 ];
 app.get("/", (req, res)=>{
