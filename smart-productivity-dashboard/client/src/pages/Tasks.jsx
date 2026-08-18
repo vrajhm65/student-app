@@ -99,7 +99,9 @@ function Tasks() {
 
     <h4>{task.title}</h4>
 
-    <div className="task-actions">
+    
+</div>
+<div className="task-actions">
 
             {/* EDIT */}
             <button
@@ -179,7 +181,6 @@ function Tasks() {
         ))}
       </div>
     </div>
-    
   );
 }
 export default Tasks;
