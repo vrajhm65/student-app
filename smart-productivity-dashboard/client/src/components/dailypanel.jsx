@@ -1,4 +1,4 @@
-function DailyPanel() {
+function DailyPanel({ tasks }) {
   return (
     <section className="daily-panel">
       <div className="daily-panel-header">
@@ -15,7 +15,9 @@ function DailyPanel() {
       <div className="daily-progress">
         <div className="progress-info">
           <span>Today's progress</span>
-          <strong>4 / 6 tasks</strong>
+          <strong>
+  {tasks.filter((task) => task.completed).length} / {tasks.length} tasks
+</strong>
         </div>
 
         <div className="progress-bar">
