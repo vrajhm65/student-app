@@ -21,8 +21,18 @@ function DailyPanel({ tasks }) {
         </div>
 
         <div className="progress-bar">
-          <div className="progress-fill"></div>
-        </div>
+  <div
+    className="progress-fill"
+    style={{
+      width:
+        tasks.length === 0
+          ? "0%"
+          : `${(tasks.filter((task) => task.completed).length / tasks.length) * 100}%`,
+    }}
+  >
+    
+  </div>
+</div>
       </div>
 
       <div className="daily-focus">
