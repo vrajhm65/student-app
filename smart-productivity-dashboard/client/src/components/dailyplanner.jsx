@@ -200,6 +200,20 @@ const [editingPlan, setEditingPlan] = useState({
       <p>{plan.description}</p>
     </div>
 
+<button
+  type="button"
+  onClick={() => {
+    setEditingPlanId(plan.id);
+    setEditingPlan({
+      time: plan.time,
+      title: plan.title,
+      description: plan.description,
+    });
+  }}
+>
+  Edit
+</button>
+
     <button
       type="button"
       onClick={async () => {
