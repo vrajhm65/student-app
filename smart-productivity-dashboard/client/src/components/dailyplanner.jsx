@@ -105,18 +105,31 @@ function DailyPlanner() {
 
       {/* PLANS */}
       {plans.map((plan) => (
-        <div
-          className="planner-item"
-          key={plan.id}
-        >
-          <span>{plan.time}</span>
+  <div
+    className="planner-item"
+    key={plan.id}
+  >
+    <span>{plan.time}</span>
 
-          <div>
-            <h4>{plan.title}</h4>
-            <p>{plan.description}</p>
-          </div>
-        </div>
-      ))}
+    <div>
+      <h4>{plan.title}</h4>
+      <p>{plan.description}</p>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => {
+        setPlans((previousPlans) =>
+          previousPlans.filter(
+            (currentPlan) => currentPlan.id !== plan.id
+          )
+        );
+      }}
+    >
+      Delete
+    </button>
+  </div>
+))}
 
     </section>
   );
