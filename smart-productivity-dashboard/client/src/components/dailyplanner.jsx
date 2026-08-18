@@ -1,7 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function DailyPlanner() {
   const [plans, setPlans] = useState([ ]);
+  useEffect(() => {
+    fetch("http://localhost:5000/api/plans")
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Plans received from backend:", data);
+            setPlans(data);
+        })
+        .catch((error) => {
+            console.error("Error fetching plans:", error);
+        });
+}, []);
 
   const [showForm, setShowForm] = useState(false);
   const [newPlan, setNewPlan] = useState({
