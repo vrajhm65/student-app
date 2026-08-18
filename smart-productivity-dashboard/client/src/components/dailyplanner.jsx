@@ -2,6 +2,14 @@ import { useEffect, useState } from "react";
 
 function DailyPlanner() {
   const [plans, setPlans] = useState([ ]);
+  const [editingPlanId, setEditingPlanId] = useState(null);
+
+const [editingPlan, setEditingPlan] = useState({
+    time: "",
+    title: "",
+    description: ""
+});
+
   useEffect(() => {
     fetch("http://localhost:5000/api/plans")
         .then((response) => response.json())
