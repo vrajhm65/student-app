@@ -149,13 +149,32 @@ function DailyPlanner() {
 
     <button
       type="button"
-      onClick={() => {
-        setPlans((previousPlans) =>
-          previousPlans.filter(
-            (currentPlan) => currentPlan.id !== plan.id
-          )
+      onClick={async () => {
+    try {
+        const response = await fetch(
+            `http://localhost:5000/api/plans/${plan.id}`,
+            {
+                method: "DELETE",
+            }
         );
-      }}
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error("Delete plan failed:", result);
+            return;
+        }
+
+        setPlans((previousPlans) =>
+            previousPlans.filter(
+                (currentPlan) => currentPlan.id !== plan.id
+            )
+        );
+
+    } catch (error) {
+        console.error("Error deleting plan:", error);
+    }
+}}
     >
       Delete
     </button>
