@@ -92,7 +92,7 @@ function Dashboard() {
 
 
           {/* Main Dashboard Grid */}
-            <DailyPanel />
+            <DailyPanel tasks={tasks}/>
           <section className="dashboard-grid">
 
             {/* Tasks */}
