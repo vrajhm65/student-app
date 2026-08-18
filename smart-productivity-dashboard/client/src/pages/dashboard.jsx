@@ -110,7 +110,7 @@ function Dashboard() {
                 </Link>
               </div>
 
-              {tasks.map((task) => (
+              {tasks.slice(0, 3).map((task) => (
               <TaskCard
                 key={task.id}
                 title={task.title}
