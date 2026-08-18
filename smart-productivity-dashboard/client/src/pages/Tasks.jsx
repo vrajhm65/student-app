@@ -126,50 +126,81 @@ function Tasks() {
             <div className="task-actions">
 
               {/* EDIT */}
-              <button
-                type="button"
-                onClick={async () => {
-                  const newTitle = prompt(
-                    "Edit task:",
-                    task.title
-                  );
+              {editingTaskId === task.id ? (
+  <>
+    <input
+      type="text"
+      value={editingTitle}
+      onChange={(event) => setEditingTitle(event.target.value)}
+    />
 
-                  if (!newTitle || !newTitle.trim()) return;
+    <button
+      type="button"
+      onClick={async () => {
+        const title = editingTitle.trim();
 
-                  const response = await fetch(
-                    `http://localhost:5000/api/tasks/${task.id}`,
-                    {
-                      method: "PUT",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        title: newTitle.trim(),
-                      }),
-                    }
-                  );
+        if (!title) return;
 
-                  const result = await response.json();
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/tasks/${task.id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                title: title,
+              }),
+            }
+          );
 
-                  if (!response.ok) {
-                    console.error(
-                      "Update failed:",
-                      result
-                    );
-                    return;
-                  }
+          const result = await response.json();
 
-                  setTasks((previousTasks) =>
-                    previousTasks.map((currentTask) =>
-                      currentTask.id === task.id
-                        ? result.task
-                        : currentTask
-                    )
-                  );
-                }}
-              >
-                Edit
-              </button>
+          if (!response.ok) {
+            console.error("Edit failed:", result);
+            return;
+          }
+
+          setTasks((previousTasks) =>
+            previousTasks.map((currentTask) =>
+              currentTask.id === task.id
+                ? result.task
+                : currentTask
+            )
+          );
+
+          setEditingTaskId(null);
+          setEditingTitle("");
+        } catch (error) {
+          console.error("Error editing task:", error);
+        }
+      }}
+    >
+      Save
+    </button>
+
+    <button
+      type="button"
+      onClick={() => {
+        setEditingTaskId(null);
+        setEditingTitle("");
+      }}
+    >
+      Cancel
+    </button>
+  </>
+) : (
+  <button
+    type="button"
+    onClick={() => {
+      setEditingTaskId(task.id);
+      setEditingTitle(task.title);
+    }}
+  >
+    Edit
+  </button>
+)}
 
               {/* DELETE */}
               <button
