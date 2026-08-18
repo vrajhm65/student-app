@@ -140,6 +140,51 @@ function DailyPlanner() {
     className="planner-item"
     key={plan.id}
   >
+
+<input
+    type="checkbox"
+    checked={plan.completed}
+    onChange={async (event) => {
+        try {
+            const response = await fetch(
+                `http://localhost:5000/api/plans/${plan.id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        completed: event.target.checked,
+                    }),
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error(
+                    "Update plan failed:",
+                    result
+                );
+                return;
+            }
+
+            setPlans((previousPlans) =>
+                previousPlans.map((currentPlan) =>
+                    currentPlan.id === plan.id
+                        ? result.plan
+                        : currentPlan
+                )
+            );
+        } catch (error) {
+            console.error(
+                "Error updating plan:",
+                error
+            );
+        }
+    }}
+/>
+
     <span>{plan.time}</span>
 
     <div>
