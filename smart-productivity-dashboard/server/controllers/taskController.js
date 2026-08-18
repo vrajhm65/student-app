@@ -18,7 +18,7 @@ const getTaskById =(req, res)=>{
     res.json(task);
 };
 const createTask=(req, res)=>{
-    const newtask={ id:tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1, 
+    const newtask={ id:tasks.length > 0 ? Math.max(...tasks.map(task => task.id)) + 1 : 1, 
         title: req.body.title,
         completed:  false
     };
