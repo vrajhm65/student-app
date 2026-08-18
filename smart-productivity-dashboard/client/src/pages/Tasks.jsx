@@ -63,8 +63,42 @@ function Tasks() {
         {tasks.map((task) => (
           <div className="task-card" key={task.id}>
             <div className="task-info">
-              <h4>{task.title}</h4>
-            </div>
+    <input
+        type="checkbox"
+        checked={task.completed}
+        onChange={async (event) => {
+            const response = await fetch(
+                `http://localhost:5000/api/tasks/${task.id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        completed: event.target.checked
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error("Update failed:", result);
+                return;
+            }
+
+            setTasks((previousTasks) =>
+                previousTasks.map((currentTask) =>
+                    currentTask.id === task.id
+                        ? result.task
+                        : currentTask
+                )
+            );
+        }}
+    />
+
+    <h4>{task.title}</h4>
+</div>
 <button
     type="button"
     onClick={async () => {
