@@ -64,14 +64,14 @@ function Dashboard() {
 
             <StatsCard
               title="Tasks Completed"
-              value="12"
-              subtitle="This week"
+              value={completedTasks}
+              subtitle="Completed"
             />
 
-            <StatsCard
-              title="Today's Tasks"
-              value="6"
-              subtitle="2 remaining"
+              <StatsCard
+                 title="Today's Tasks"
+                value={totalTasks}
+                subtitle={`${pendingTasks} remaining`}
             />
 
             <StatsCard
