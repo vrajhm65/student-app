@@ -100,8 +100,8 @@ const totalFocusMinutes = Math.floor(
 
             <StatsCard
     title="Focus Time"
-    value={`${Math.floor(focusSeconds / 60)}m`}
-    subtitle="Current session"
+    value={`${totalFocusMinutes}m`}
+    subtitle="Total sessions"
 />
 
             <StatsCard
