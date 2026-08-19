@@ -95,7 +95,10 @@ function Dashboard() {
 
           {/* Main Dashboard Grid */}
             <DailyPanel tasks={tasks}/>
-            <FocusTimer />
+            <FocusTimer
+    seconds={focusSeconds}
+    setSeconds={setFocusSeconds}
+/>
 
           <section className="dashboard-grid">
 

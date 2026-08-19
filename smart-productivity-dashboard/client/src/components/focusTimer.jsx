@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
-function FocusTimer() {
-  const [seconds, setSeconds] = useState(0);
+function FocusTimer({ seconds, setSeconds }) {
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
@@ -12,7 +11,7 @@ function FocusTimer() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [running]);
+  }, [running, setSeconds]);
 
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
