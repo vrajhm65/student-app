@@ -42,10 +42,12 @@ function DailyPanel({ tasks }) {
         <div>
           <p className="section-label">MAIN FOCUS</p>
           <h3>
-  {mainFocus ? mainFocus.title : "All tasks completed!"}
-</h3>
+            {mainFocus ? mainFocus.title : "All tasks completed!"}
+          </h3>
           <p>
-            Stay focused on the most important task of the day.
+            {mainFocus
+            ? "Stay focused on your next pending task."
+            : "Great work! You've completed all your tasks."}
           </p>
         </div>
       </div>
