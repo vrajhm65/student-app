@@ -1,4 +1,5 @@
 function DailyPanel({ tasks }) {
+  const mainFocus = tasks.find((task) => !task.completed);
   return (
     <section className="daily-panel">
       <div className="daily-panel-header">
@@ -40,7 +41,9 @@ function DailyPanel({ tasks }) {
 
         <div>
           <p className="section-label">MAIN FOCUS</p>
-          <h3>Complete your MERN project</h3>
+          <h3>
+  {mainFocus ? mainFocus.title : "All tasks completed!"}
+</h3>
           <p>
             Stay focused on the most important task of the day.
           </p>
