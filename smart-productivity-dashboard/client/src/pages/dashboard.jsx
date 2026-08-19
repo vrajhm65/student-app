@@ -94,6 +94,8 @@ function Dashboard() {
 
           {/* Main Dashboard Grid */}
             <DailyPanel tasks={tasks}/>
+            <FocusTimer />
+            
           <section className="dashboard-grid">
 
             {/* Tasks */}
