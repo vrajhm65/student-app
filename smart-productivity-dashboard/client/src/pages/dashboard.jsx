@@ -4,6 +4,7 @@ import StatsCard from "../components/StatsCard";
 import TaskCard from "../components/TaskCard";
 import DailyPlanner from "../components/DailyPlanner";
 import DailyPanel from "../components/DailyPanel";
+import FocusTimer from "../components/FocusTimer";
 
 import { useState, useEffect } from "react"; 
 import { Link } from "react-router-dom"; 
