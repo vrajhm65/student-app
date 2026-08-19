@@ -79,10 +79,10 @@ function Dashboard() {
             />
 
             <StatsCard
-              title="Focus Time"
-              value="0m"
-              subtitle="Start a focus session"
-            />
+    title="Focus Time"
+    value={`${Math.floor(focusSeconds / 60)}m`}
+    subtitle="Current session"
+/>
 
             <StatsCard
               title="Current Streak"
