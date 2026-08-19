@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 function Dashboard() {
     const [tasks, setTasks] = useState([]);
     const [focusSeconds, setFocusSeconds] = useState(0);
+    const [focusSessions, setFocusSessions] = useState([]);
 
     useEffect(() => {
         fetch("http://localhost:5000/api/tasks")
@@ -25,6 +26,18 @@ function Dashboard() {
             });
     }, []);
 
+    useEffect(() => {
+    fetch("http://localhost:5000/api/focus")
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Focus sessions:", data);
+            setFocusSessions(data);
+        })
+        .catch((error) => {
+            console.error("Focus session error:", error);
+        });
+    }, []);
+
     const totalTasks = tasks.length;
 
     const completedTasks = tasks.filter(
@@ -32,6 +45,13 @@ function Dashboard() {
     ).length;
 
     const pendingTasks = totalTasks - completedTasks;
+    const totalFocusSeconds = focusSessions.reduce(
+    (total, session) => total + session.duration,
+    0
+);
+const totalFocusMinutes = Math.floor(
+    totalFocusSeconds / 60
+);
 
     // your existing return() comes below
 
