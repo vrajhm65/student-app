@@ -26,11 +26,51 @@ function FocusTimer({ seconds, setSeconds }) {
       </h2>
 
       <button
-        type="button"
-        onClick={() => setRunning(!running)}
-      >
-        {running ? "Pause" : "Start"}
-      </button>
+    type="button"
+    onClick={async () => {
+        if (running) {
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/api/focus",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            duration: seconds,
+                        }),
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error(
+                        "Focus session save failed:",
+                        result
+                    );
+                    return;
+                }
+
+                console.log(
+                    "Focus session saved:",
+                    result
+                );
+
+            } catch (error) {
+                console.error(
+                    "Error saving focus session:",
+                    error
+                );
+            }
+        }
+
+        setRunning(!running);
+    }}
+>
+    {running ? "Pause" : "Start"}
+</button>
 
       <button
         type="button"
