@@ -78,8 +78,8 @@ function Dashboard() {
 
             <StatsCard
               title="Focus Time"
-              value="4h 20m"
-              subtitle="This week"
+              value="0m"
+              subtitle="Start a focus session"
             />
 
             <StatsCard
