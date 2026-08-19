@@ -6,10 +6,13 @@ app.use(cors());
 const PORT = 5000; // choosing port
 const taskRoutes = require("./routes/taskRoutes");
 const planRoutes = require("./routes/planRoutes");
+const focusRoutes = require("./routes/focusRoutes");
 
 app.use(express.json()); // express needs to understand the json .so it acts as a translator
 app.use("/api/tasks", taskRoutes);
 app.use("/api/plans", planRoutes);
+app.use("/api/focus", focusRoutes);
+
 
 app.get("/", (req, res)=>{
     res.send("Smart Productivity Dashboard Backend is running")
