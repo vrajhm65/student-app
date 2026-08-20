@@ -1,7 +1,18 @@
 const Task = require("../models/Task");
 let tasks = [];
-const getTasks=(req, res) =>{
-    res.json(tasks);
+
+const getTasks = async (req, res) => {
+    try {
+        const tasks = await Task.find();
+
+        res.json(tasks);
+    } catch (error) {
+        console.error("Error fetching tasks:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch tasks"
+        });
+    }
 };
 const getTaskById =(req, res)=>{
 
