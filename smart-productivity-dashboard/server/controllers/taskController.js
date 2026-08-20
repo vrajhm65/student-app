@@ -1,6 +1,5 @@
-let tasks = [
-
-];
+const Task = require("../models/Task");
+let tasks = [];
 const getTasks=(req, res) =>{
     res.json(tasks);
 };
