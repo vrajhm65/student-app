@@ -1,5 +1,5 @@
 const dns=require('node:dns');
-dns.setServers(['8.8.8.8', '1.1.1.1']); //force 
+dns.setServers(['8.8.8.8', '1.1.1.1']); //force DNS to use Google and Cloudflare DNS servers
 
 require("dotenv").config();
 
