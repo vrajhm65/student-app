@@ -1,8 +1,9 @@
 require("dotenv").config();
+
 const express = require("express");  // importing express library
 const connectDB = require("./config/db");
 const app = express(); // creating express app
-connectDB();
+connectDB( ); // connecting to database
 const cors = require("cors");
 app.use(cors());
 
