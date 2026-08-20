@@ -1,6 +1,11 @@
+require("dotenv").config();
+
 const express = require("express");  // importing express library
+const connectDB = require("./config/db");
+
 const cors = require("cors");
 const app = express(); // creating express app
+connectDB();
 app.use(cors());
 
 const PORT = 5000; // choosing port
