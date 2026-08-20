@@ -7,7 +7,8 @@ connectDB(); // connecting to database
 const cors = require("cors");
 app.use(cors());
 
-const PORT = 5000; // choosing port
+const PORT = 5000; // choosing port number for server to run on
+
 const taskRoutes = require("./routes/taskRoutes");
 const planRoutes = require("./routes/planRoutes");
 const focusRoutes = require("./routes/focusRoutes");
