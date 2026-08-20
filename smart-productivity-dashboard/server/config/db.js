@@ -1,5 +1,3 @@
-const dotenv = require("dotenv");
-dotenv.config();    
 
 const mongoose = require("mongoose");
 
@@ -15,3 +13,5 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+
+// conection is failed what to do?  
