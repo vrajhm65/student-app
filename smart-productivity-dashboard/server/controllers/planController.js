@@ -53,24 +53,27 @@ const createPlan = async (req, res) => {
     }
 };
 
-const deletePlan = (req, res) => {
-    const planId = Number(req.params.id);
+const deletePlan = async (req, res) => {
+    try {
+        const plan = await Plan.findByIdAndDelete(req.params.id);
 
-    const index = plans.findIndex(
-        (plan) => plan.id === planId
-    );
+        if (!plan) {
+            return res.status(404).json({
+                message: "Plan not found"
+            });
+        }
 
-    if (index === -1) {
-        return res.status(404).json({
-            message: "Plan not found"
+        res.json({
+            message: "Plan deleted successfully"
+        });
+
+    } catch (error) {
+        console.error("Error deleting plan:", error);
+
+        res.status(500).json({
+            message: "Failed to delete plan"
         });
     }
-
-    plans.splice(index, 1);
-
-    res.json({
-        message: "Plan deleted successfully"
-    });
 };
 
 const updatePlan = async (req, res) => {
