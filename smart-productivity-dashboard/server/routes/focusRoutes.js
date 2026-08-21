@@ -1,3 +1,8 @@
+const {
+    getTimer,
+    updateTimer
+} = require("../controllers/timerController");
+
 const express = require("express");
 
 const router = express.Router();
