@@ -1,5 +1,5 @@
 const Task = require("../models/task");
-let tasks = [];
+
 
 const getTasks = async (req, res) => {
     try {

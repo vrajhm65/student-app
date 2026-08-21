@@ -1,5 +1,4 @@
 const Plan = require("../models/plan");
-let plans = [];
 
 const getPlans = async (req, res) => {
     try {
