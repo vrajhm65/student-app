@@ -70,25 +70,37 @@ const createTask = async (req, res) => {
     }
 };
 
-const updateTask=(req, res)=>{
+const updateTask = async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
 
-   const taskId=Number(req.params.id);
-   const task = tasks.find(task=> task.id ===taskId);
+        if (!task) {
+            return res.status(404).json({
+                message: "Task not found"
+            });
+        }
 
-   if(!task){
-    return res.status(404).json({
-        message:"TASK NOT FOUND"
-    });
-   }
-   task.title=req.body.title ?? task.title; // if new title is provided updte it .or keep old one
-   task.completed= req.body.completed ?? task.completed;
+        task.title = req.body.title ?? task.title;
+        task.completed = req.body.completed ?? task.completed;
 
-   res.json({
-    message:"Task updated succesfully",
-    task
+        await task.save();
 
-   });
+        res.json({
+            message: "Task updated successfully",
+            task: {
+                id: task._id.toString(),
+                title: task.title,
+                completed: task.completed
+            }
+        });
 
+    } catch (error) {
+        console.error("Error updating task:", error);
+
+        res.status(500).json({
+            message: "Failed to update task"
+        });
+    }
 };
 
 const deleteTask = (req, res) => {
