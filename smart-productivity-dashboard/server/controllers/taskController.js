@@ -27,16 +27,24 @@ const getTaskById =(req, res)=>{
     }
     res.json(task);
 };
-const createTask=(req, res)=>{
-    const newtask={ id:tasks.length > 0 ? Math.max(...tasks.map(task => task.id)) + 1 : 1, 
-        title: req.body.title,
-        completed:  false
-    };
-    tasks.push(newtask);
-    res.status(201).json({
-        message: "task added succesfully",
-        task: newtask
-    });
+const createTask = async (req, res) => {
+    try {
+        const newTask = await Task.create({
+            title: req.body.title,
+            completed: false
+        });
+
+        res.status(201).json({
+            message: "Task added successfully",
+            task: newTask
+        });
+    } catch (error) {
+        console.error("Error creating task:", error);
+
+        res.status(500).json({
+            message: "Failed to create task"
+        });
+    }
 };
 
 const updateTask=(req, res)=>{
