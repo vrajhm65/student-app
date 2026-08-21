@@ -40,10 +40,14 @@ const createTask = async (req, res) => {
             completed: false
         });
 
-        res.status(201).json({
-            message: "Task added successfully",
-            task: newTask
-        });
+       res.status(201).json({
+    message: "Task added successfully",
+    task: {
+        id: newTask._id.toString(),
+        title: newTask.title,
+        completed: newTask.completed
+    }
+});
     } catch (error) {
         console.error("Error creating task:", error);
 
