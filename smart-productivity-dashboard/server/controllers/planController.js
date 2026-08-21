@@ -1,3 +1,4 @@
+const Plan = require("../models/Plan");
 let plans = [];
 
 const getPlans = (req, res) => {
