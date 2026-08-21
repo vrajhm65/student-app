@@ -1,10 +1,10 @@
 import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import StatsCard from "../components/StatsCard";
-import TaskCard from "../components/TaskCard";
-import DailyPlanner from "../components/DailyPlanner";
-import DailyPanel from "../components/DailyPanel";
-import FocusTimer from "../components/FocusTimer";
+import Header from "../components/header";
+import StatsCard from "../components/statscard";
+import TaskCard from "../components/taskcard";
+import DailyPlanner from "../components/dailyplanner";
+import DailyPanel from "../components/dailypanel";
+import FocusTimer from "../components/focusTimer";
 
 import { useState, useEffect } from "react"; 
 import { Link } from "react-router-dom"; 
