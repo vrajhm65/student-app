@@ -1,8 +1,27 @@
-const Plan = require("../models/Plan");
+const Plan = require("../models/plan");
 let plans = [];
 
-const getPlans = (req, res) => {
-    res.json(plans);
+const getPlans = async (req, res) => {
+    try {
+        const plans = await Plan.find();
+
+        const formattedPlans = plans.map((plan) => ({
+            id: plan._id.toString(),
+            time: plan.time,
+            title: plan.title,
+            description: plan.description,
+            completed: plan.completed
+        }));
+
+        res.json(formattedPlans);
+
+    } catch (error) {
+        console.error("Error fetching plans:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch plans"
+        });
+    }
 };
 
 const createPlan = (req, res) => {
