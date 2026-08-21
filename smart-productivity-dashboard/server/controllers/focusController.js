@@ -1,7 +1,26 @@
-let focusSessions = [];
+const FocusSession = require("../models/FocusSession");
 
-const getFocusSessions = (req, res) => {
-    res.json(focusSessions);
+const getFocusSessions = async (req, res) => {
+    try {
+        const sessions = await FocusSession.find().sort({
+            createdAt: -1
+        });
+
+        const formattedSessions = sessions.map((session) => ({
+            id: session._id.toString(),
+            duration: session.duration,
+            createdAt: session.createdAt
+        }));
+
+        res.json(formattedSessions);
+
+    } catch (error) {
+        console.error("Error fetching focus sessions:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch focus sessions"
+        });
+    }
 };
 
 const createFocusSession = (req, res) => {
