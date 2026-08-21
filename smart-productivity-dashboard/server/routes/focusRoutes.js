@@ -17,5 +17,8 @@ router.get("/", getFocusSessions);
 
 router.post("/", createFocusSession);
 
+router.get("/timer", getTimer);
+
+router.put("/timer", updateTimer);
 
 module.exports = router;
