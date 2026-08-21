@@ -5,6 +5,11 @@ const focusSessionSchema = new mongoose.Schema(
         duration: {
             type: Number,
             required: true
+        },
+
+        completed: {
+            type: Boolean,
+            default: false
         }
     },
     {
@@ -12,4 +17,7 @@ const focusSessionSchema = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("FocusSession", focusSessionSchema);
+module.exports = mongoose.model(
+    "FocusSession",
+    focusSessionSchema
+);
