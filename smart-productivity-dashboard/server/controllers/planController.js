@@ -73,28 +73,41 @@ const deletePlan = (req, res) => {
     });
 };
 
-const updatePlan = (req, res) => {
-    const planId = Number(req.params.id);
+const updatePlan = async (req, res) => {
+    try {
+        const plan = await Plan.findById(req.params.id);
 
-    const plan = plans.find(
-        (currentPlan) => currentPlan.id === planId
-    );
+        if (!plan) {
+            return res.status(404).json({
+                message: "Plan not found"
+            });
+        }
 
-    if (!plan) {
-        return res.status(404).json({
-            message: "Plan not found"
+        plan.time = req.body.time ?? plan.time;
+        plan.title = req.body.title ?? plan.title;
+        plan.description = req.body.description ?? plan.description;
+        plan.completed = req.body.completed ?? plan.completed;
+
+        await plan.save();
+
+        res.json({
+            message: "Plan updated successfully",
+            plan: {
+                id: plan._id.toString(),
+                time: plan.time,
+                title: plan.title,
+                description: plan.description,
+                completed: plan.completed
+            }
+        });
+
+    } catch (error) {
+        console.error("Error updating plan:", error);
+
+        res.status(500).json({
+            message: "Failed to update plan"
         });
     }
-
-    plan.title = req.body.title ?? plan.title;
-    plan.time = req.body.time ?? plan.time;
-    plan.description = req.body.description ?? plan.description;
-    plan.completed = req.body.completed ?? plan.completed;
-
-    res.json({
-        message: "Plan updated successfully",
-        plan
-    });
 };
 
 module.exports = {
