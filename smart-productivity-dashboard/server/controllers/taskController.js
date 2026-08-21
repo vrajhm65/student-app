@@ -20,19 +20,32 @@ const getTasks = async (req, res) => {
         });
     }
 };
-const getTaskById =(req, res)=>{
 
-    const taskId = Number(req.params.id); // rreq params id reffers to "5" if url is /api/tasks/id. notice its a string and convert into number
-    const task = tasks.find(task => task.id ===taskId); // searches the array and returns first matching task
+const getTaskById = async (req, res) => {
+    try {
+        const task = await Task.findById(req.params.id);
 
-    if(!task){
-        return res.status(404).json   // 404 if no task exists meanas request task not found 
-        ({
-            message: "Task not found"
+        if (!task) {
+            return res.status(404).json({
+                message: "Task not found"
+            });
+        }
+
+        res.json({
+            id: task._id.toString(),
+            title: task.title,
+            completed: task.completed
+        });
+
+    } catch (error) {
+        console.error("Error fetching task:", error);
+
+        res.status(500).json({
+            message: "Failed to fetch task"
         });
     }
-    res.json(task);
 };
+
 const createTask = async (req, res) => {
     try {
         const newTask = await Task.create({
