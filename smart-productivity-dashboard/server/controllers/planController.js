@@ -24,23 +24,33 @@ const getPlans = async (req, res) => {
     }
 };
 
-const createPlan = (req, res) => {
-    const newPlan = {
-        id: plans.length > 0
-            ? Math.max(...plans.map(plan => plan.id)) + 1
-            : 1,
-        time: req.body.time,
-        title: req.body.title,
-        description: req.body.description,
-        completed: false    
-    };
+const createPlan = async (req, res) => {
+    try {
+        const newPlan = await Plan.create({
+            time: req.body.time,
+            title: req.body.title,
+            description: req.body.description,
+            completed: false
+        });
 
-    plans.push(newPlan);
+        res.status(201).json({
+            message: "Plan added successfully",
+            plan: {
+                id: newPlan._id.toString(),
+                time: newPlan.time,
+                title: newPlan.title,
+                description: newPlan.description,
+                completed: newPlan.completed
+            }
+        });
 
-    res.status(201).json({
-        message: "Plan added successfully",
-        plan: newPlan
-    });
+    } catch (error) {
+        console.error("Error creating plan:", error);
+
+        res.status(500).json({
+            message: "Failed to create plan"
+        });
+    }
 };
 
 const deletePlan = (req, res) => {
