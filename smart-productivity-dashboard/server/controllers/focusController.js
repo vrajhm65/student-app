@@ -1,4 +1,4 @@
-const FocusSession = require("../models/FocusSession");
+const FocusSession = require("../models/focusSession");
 
 const getFocusSessions = async (req, res) => {
     try {
@@ -23,28 +23,28 @@ const getFocusSessions = async (req, res) => {
     }
 };
 
-const createFocusSession = (req, res) => {
-    const newSession = {
-        id:
-            focusSessions.length > 0
-                ? Math.max(
-                      ...focusSessions.map(
-                          (session) => session.id
-                      )
-                  ) + 1
-                : 1,
+const createFocusSession = async (req, res) => {
+    try {
+        const newSession = await FocusSession.create({
+            duration: req.body.duration
+        });
 
-        duration: req.body.duration,
+        res.status(201).json({
+            message: "Focus session added successfully",
+            session: {
+                id: newSession._id.toString(),
+                duration: newSession.duration,
+                createdAt: newSession.createdAt
+            }
+        });
 
-        createdAt: new Date()
-    };
+    } catch (error) {
+        console.error("Error creating focus session:", error);
 
-    focusSessions.push(newSession);
-
-    res.status(201).json({
-        message: "Focus session added successfully",
-        session: newSession
-    });
+        res.status(500).json({
+            message: "Failed to create focus session"
+        });
+    }
 };
 
 module.exports = {
