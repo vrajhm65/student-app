@@ -5,7 +5,13 @@ const getTasks = async (req, res) => {
     try {
         const tasks = await Task.find();
 
-        res.json(tasks);
+        const formattedTasks = tasks.map((task) => ({
+            id: task._id.toString(),
+            title: task.title,
+            completed: task.completed
+        }));
+
+        res.json(formattedTasks);
     } catch (error) {
         console.error("Error fetching tasks:", error);
 
