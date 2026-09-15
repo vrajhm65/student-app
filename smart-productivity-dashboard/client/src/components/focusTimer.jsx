@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function FocusTimer({ seconds, setSeconds }) {
+function FocusTimer({ seconds, setSeconds, setSessions }) {
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(true);
 
