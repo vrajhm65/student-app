@@ -4,7 +4,7 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import Tasks from "./pages/Tasks";
 import Daily from "./pages/Daily";
-import Calendar from "./pages/Calendar";
+import Calendar from "./pages/calendar";
 import Settings from "./pages/settings";
 
 function App() {
