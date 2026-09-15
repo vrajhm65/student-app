@@ -18,20 +18,27 @@ function Dashboard() {
     const [currentStreak, setCurrentStreak] = useState(0);
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/tasks", {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-})
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Dashboard tasks:", data);
+    fetch("http://localhost:5000/api/tasks", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Dashboard tasks:", data);
+
+            if (Array.isArray(data)) {
                 setTasks(data);
-            })
-            .catch((error) => {
-                console.error("Dashboard task error:", error);
-            });
-    }, []);
+            } else {
+                console.error("Tasks response is not an array:", data);
+                setTasks([]);
+            }
+        })
+        .catch((error) => {
+            console.error("Dashboard task error:", error);
+            setTasks([]);
+        });
+}, [token]);
 
     useEffect(() => {
     if (tasks.length === 0) {
