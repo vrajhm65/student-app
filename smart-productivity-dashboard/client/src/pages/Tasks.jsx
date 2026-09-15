@@ -5,6 +5,8 @@ function Tasks() {
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
 
+  const token = localStorage.getItem("token");
+
   // Get all tasks
   useEffect(() => {
     fetch("http://localhost:5000/api/tasks")
