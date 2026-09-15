@@ -6,6 +6,7 @@ import Tasks from "./pages/Tasks";
 import Daily from "./pages/Daily";
 import Calendar from "./pages/calendar";
 import Settings from "./pages/settings";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
