@@ -80,17 +80,27 @@ const updateTask = async (req, res) => {
             });
         }
 
-        task.title = req.body.title ?? task.title;
-        task.completed = req.body.completed ?? task.completed;
+       task.title = req.body.title ?? task.title;
 
-        await task.save();
+if (req.body.completed !== undefined) {
+    task.completed = req.body.completed;
+
+    if (req.body.completed === true) {
+        task.completedAt = new Date();
+    } else {
+        task.completedAt = null;
+    }
+}
+
+await task.save();
 
         res.json({
             message: "Task updated successfully",
             task: {
                 id: task._id.toString(),
                 title: task.title,
-                completed: task.completed
+                completed: task.completed,
+                completedAt: task.completedAt
             }
         });
 
