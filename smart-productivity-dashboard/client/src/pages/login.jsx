@@ -82,6 +82,10 @@ function Login() {
             Sign in
           </button>
 
+          <p className="auth-switch">
+  Don't have an account?{" "}
+  <Link to="/register">Create Account</Link>
+</p>
         </form>
 
       </div>
