@@ -156,6 +156,7 @@ function Tasks() {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
               },
               body: JSON.stringify({
                 title: title,
@@ -218,7 +219,10 @@ function Tasks() {
                     const response = await fetch(
                       `http://localhost:5000/api/tasks/${task.id}`,
                       {
-                        method: "DELETE",
+                       method: "DELETE",
+headers: {
+  Authorization: `Bearer ${token}`,
+},
                       }
                     );
 
