@@ -9,6 +9,7 @@ import Settings from "./pages/settings";
 import Register from "./pages/register";
 
 <Route path="/register" element={<Register />} />
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
