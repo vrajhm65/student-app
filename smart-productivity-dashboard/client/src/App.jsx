@@ -8,6 +8,7 @@ import Calendar from "./pages/calendar";
 import Settings from "./pages/settings";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 
+
 function App() {
   return (
     <BrowserRouter>
