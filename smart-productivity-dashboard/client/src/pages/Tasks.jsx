@@ -101,8 +101,9 @@ function Tasks() {
                     {
                       method: "PUT",
                       headers: {
-                        "Content-Type": "application/json",
-                      },
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${token}`,
+},
                       body: JSON.stringify({
                         completed: event.target.checked,
                       }),
