@@ -178,7 +178,7 @@ const totalFocusMinutes = Math.floor(
 
             <StatsCard
               title="Current Streak"
-              value="7 days"
+              value={`${currentStreak} days`}
               subtitle="Keep going!"
             />
 
