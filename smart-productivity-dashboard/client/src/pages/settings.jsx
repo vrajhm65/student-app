@@ -1,12 +1,9 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import Header from "../components/header";
 
 function Settings() {
   const navigate = useNavigate();
-
-  const [darkMode, setDarkMode] = useState(true);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -22,34 +19,58 @@ function Settings() {
 
         <section className="settings-page">
           <div className="settings-header">
-            <p className="section-label">SETTINGS</p>
-            <h1>Make SmartFlow yours.</h1>
+            <p className="section-label">HELP & TIPS</p>
+            <h1>Make the most of SmartFlow.</h1>
             <p>
-              Manage your preferences and account.
+              Simple ways to stay organized and productive.
             </p>
           </div>
 
           <div className="settings-card">
+
             <div className="settings-row">
               <div>
-                <h3>Appearance</h3>
-                <p>Use the dark SmartFlow interface.</p>
+                <h3>Tasks</h3>
+                <p>
+                  Add tasks from the Menu and mark them complete when finished.
+                </p>
               </div>
-
-              <button
-                className={`toggle-button ${
-                  darkMode ? "active" : ""
-                }`}
-                onClick={() => setDarkMode(!darkMode)}
-              >
-                {darkMode ? "Dark" : "Light"}
-              </button>
             </div>
 
             <div className="settings-row">
               <div>
-                <h3>Account</h3>
-                <p>Your SmartFlow account is protected by authentication.</p>
+                <h3>Daily Planner</h3>
+                <p>
+                  Use Daily to plan your activities and track what you complete.
+                </p>
+              </div>
+            </div>
+
+            <div className="settings-row">
+              <div>
+                <h3>Focus Timer</h3>
+                <p>
+                  Start the timer when you want to focus and build productive
+                  sessions throughout your day.
+                </p>
+              </div>
+            </div>
+
+            <div className="settings-row">
+              <div>
+                <h3>Calendar</h3>
+                <p>
+                  Use Calendar to get a simple overview of your month and tasks.
+                </p>
+              </div>
+            </div>
+
+            <div className="settings-row">
+              <div>
+                <h3>Your Data</h3>
+                <p>
+                  Your tasks, plans and focus data are connected to your account.
+                </p>
               </div>
 
               <span className="settings-status">
@@ -59,8 +80,10 @@ function Settings() {
 
             <div className="settings-row">
               <div>
-                <h3>Session</h3>
-                <p>Sign out from this device.</p>
+                <h3>Sign Out</h3>
+                <p>
+                  Log out of your SmartFlow account on this device.
+                </p>
               </div>
 
               <button
@@ -70,6 +93,7 @@ function Settings() {
                 Logout
               </button>
             </div>
+
           </div>
         </section>
       </main>
