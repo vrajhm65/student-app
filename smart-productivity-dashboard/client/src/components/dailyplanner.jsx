@@ -1,106 +1,149 @@
 import { useEffect, useState } from "react";
 
 function DailyPlanner() {
-  const [plans, setPlans] = useState([ ]);
-  const [editingPlanId, setEditingPlanId] = useState(null);
-
-const [editingPlan, setEditingPlan] = useState({
-    time: "",
-    title: "",
-    description: ""
-});
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api/plans")
-        .then((response) => response.json())
-        .then((data) => {
-            console.log("Plans received from backend:", data);
-            setPlans(data);
-        })
-        .catch((error) => {
-            console.error("Error fetching plans:", error);
-        });
-}, []);
-
+  const [plans, setPlans] = useState([]);
   const [showForm, setShowForm] = useState(false);
+
   const [newPlan, setNewPlan] = useState({
     time: "",
     title: "",
-    description: "",
   });
 
-  const addPlan = async (event) => {
+  const API_URL = "http://localhost:5000/api/plans";
+
+  const getHeaders = () => {
+    const token = localStorage.getItem("token");
+
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
+  const fetchPlans = async () => {
+    try {
+      const response = await fetch(API_URL, {
+        headers: getHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to fetch plans:", data);
+        return;
+      }
+
+      setPlans(data);
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  const handleAddPlan = async (event) => {
     event.preventDefault();
 
-    if (!newPlan.time || !newPlan.title.trim()) {
-        return;
+    if (!newPlan.time || !newPlan.title) {
+      return;
     }
 
     try {
-        const response = await fetch(
-            "http://localhost:5000/api/plans",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    time: newPlan.time,
-                    title: newPlan.title.trim(),
-                    description: newPlan.description.trim(),
-                }),
-            }
-        );
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(newPlan),
+      });
 
-        const result = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-            console.error("Add plan failed:", result);
-            return;
-        }
+      if (!response.ok) {
+        console.error("Failed to create plan:", data);
+        return;
+      }
 
-        setPlans((previousPlans) => [
-            ...previousPlans,
-            result.plan,
-        ]);
+      setPlans((previousPlans) => [...previousPlans, data.plan]);
 
-        setNewPlan({
-            time: "",
-            title: "",
-            description: "",
-        });
+      setNewPlan({
+        time: "",
+        title: "",
+      });
 
-        setShowForm(false);
-
+      setShowForm(false);
     } catch (error) {
-        console.error("Error adding plan:", error);
+      console.error("Error creating plan:", error);
     }
-};
+  };
+
+  const handleTogglePlan = async (id, completed) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify({
+          completed: !completed,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to update plan:", data);
+        return;
+      }
+
+      setPlans((previousPlans) =>
+        previousPlans.map((plan) =>
+          plan.id === id ? data.plan : plan
+        )
+      );
+    } catch (error) {
+      console.error("Error updating plan:", error);
+    }
+  };
+
+  const handleDeletePlan = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE",
+        headers: getHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Failed to delete plan:", data);
+        return;
+      }
+
+      setPlans((previousPlans) =>
+        previousPlans.filter((plan) => plan.id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting plan:", error);
+    }
+  };
 
   return (
     <section className="daily-planner">
-
-      <div className="section-heading">
+      <div className="daily-planner-header">
         <div>
-          <p className="section-label">DAILY</p>
-          <h3>Today's Plan</h3>
+          <p className="section-label">DAILY PLANNER</p>
+          <h2>Plan your day.</h2>
         </div>
 
         <button
-          className="view-button"
           type="button"
           onClick={() => setShowForm(!showForm)}
         >
-          {showForm ? "Close" : "+ Add"}
+          {showForm ? "Cancel" : "+ Add Plan"}
         </button>
       </div>
 
-      {/* ADD PLAN FORM */}
       {showForm && (
-        <form
-          className="planner-form"
-          onSubmit={addPlan}
-        >
+        <form className="plan-form" onSubmit={handleAddPlan}>
           <input
             type="time"
             value={newPlan.time}
@@ -110,11 +153,12 @@ const [editingPlan, setEditingPlan] = useState({
                 time: event.target.value,
               })
             }
+            required
           />
 
           <input
             type="text"
-            placeholder="Plan title"
+            placeholder="What are you planning?"
             value={newPlan.title}
             onChange={(event) =>
               setNewPlan({
@@ -122,222 +166,45 @@ const [editingPlan, setEditingPlan] = useState({
                 title: event.target.value,
               })
             }
+            required
           />
 
-          <input
-            type="text"
-            placeholder="Description"
-            value={newPlan.description}
-            onChange={(event) =>
-              setNewPlan({
-                ...newPlan,
-                description: event.target.value,
-              })
-            }
-          />
-
-          <button type="submit">
-            Add Plan
-          </button>
+          <button type="submit">Add</button>
         </form>
       )}
 
-      {/* PLANS */}
-      {plans.map((plan) => (
-  <div
-    className="planner-item"
-    key={plan.id}
-  >
+      <div className="planner-list">
+        {plans.length === 0 ? (
+          <p className="empty-state">No plans yet. Add one to get started.</p>
+        ) : (
+          plans.map((plan) => (
+            <div className="planner-item" key={plan.id}>
+              <div className="planner-time">{plan.time}</div>
 
-<input
-    type="checkbox"
-    checked={plan.completed}
-    onChange={async (event) => {
-        try {
-            const response = await fetch(
-                `http://localhost:5000/api/plans/${plan.id}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        completed: event.target.checked,
-                    }),
-                }
-            );
+              <div className="planner-content">
+                <input
+                  type="checkbox"
+                  checked={plan.completed}
+                  onChange={() =>
+                    handleTogglePlan(plan.id, plan.completed)
+                  }
+                />
 
-            const result = await response.json();
+                <span className={plan.completed ? "completed" : ""}>
+                  {plan.title}
+                </span>
+              </div>
 
-            if (!response.ok) {
-                console.error(
-                    "Update plan failed:",
-                    result
-                );
-                return;
-            }
-
-            setPlans((previousPlans) =>
-                previousPlans.map((currentPlan) =>
-                    currentPlan.id === plan.id
-                        ? result.plan
-                        : currentPlan
-                )
-            );
-        } catch (error) {
-            console.error(
-                "Error updating plan:",
-                error
-            );
-        }
-    }}
-/>
-
-    <span>{plan.time}</span>
-
-    {editingPlanId === plan.id ? (
-  <div className="planner-edit-form">
-
-    <input
-      type="time"
-      value={editingPlan.time}
-      onChange={(event) =>
-        setEditingPlan({
-          ...editingPlan,
-          time: event.target.value,
-        })
-      }
-    />
-
-    <input
-      type="text"
-      value={editingPlan.title}
-      onChange={(event) =>
-        setEditingPlan({
-          ...editingPlan,
-          title: event.target.value,
-        })
-      }
-    />
-
-    <input
-      type="text"
-      value={editingPlan.description}
-      onChange={(event) =>
-        setEditingPlan({
-          ...editingPlan,
-          description: event.target.value,
-        })
-      }
-    />
-
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:5000/api/plans/${plan.id}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                time: editingPlan.time,
-                title: editingPlan.title.trim(),
-                description: editingPlan.description.trim(),
-              }),
-            }
-          );
-
-          const result = await response.json();
-
-          if (!response.ok) {
-            console.error("Edit plan failed:", result);
-            return;
-          }
-
-          setPlans((previousPlans) =>
-            previousPlans.map((currentPlan) =>
-              currentPlan.id === plan.id
-                ? result.plan
-                : currentPlan
-            )
-          );
-
-          setEditingPlanId(null);
-
-        } catch (error) {
-          console.error("Error editing plan:", error);
-        }
-      }}
-    >
-      Save
-    </button>
-
-    <button
-      type="button"
-      onClick={() => setEditingPlanId(null)}
-    >
-      Cancel
-    </button>
-
-  </div>
-) : (
-  <div>
-    <h4>{plan.title}</h4>
-    <p>{plan.description}</p>
-  </div>
-)}
-
-<button
-  type="button"
-  onClick={() => {
-    setEditingPlanId(plan.id);
-    setEditingPlan({
-      time: plan.time,
-      title: plan.title,
-      description: plan.description,
-    });
-  }}
->
-  Edit
-</button>
-
-    <button
-      type="button"
-      onClick={async () => {
-    try {
-        const response = await fetch(
-            `http://localhost:5000/api/plans/${plan.id}`,
-            {
-                method: "DELETE",
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            console.error("Delete plan failed:", result);
-            return;
-        }
-
-        setPlans((previousPlans) =>
-            previousPlans.filter(
-                (currentPlan) => currentPlan.id !== plan.id
-            )
-        );
-
-    } catch (error) {
-        console.error("Error deleting plan:", error);
-    }
-}}
-    >
-      Delete
-    </button>
-  </div>
-))}
-
+              <button
+                type="button"
+                onClick={() => handleDeletePlan(plan.id)}
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </section>
   );
 }
