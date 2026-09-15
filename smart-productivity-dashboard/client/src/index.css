@@ -109,3 +109,139 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+.calendar-page,
+.settings-page {
+  padding: 30px;
+}
+
+.calendar-header,
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.calendar-header h1,
+.settings-header h1 {
+  margin: 5px 0;
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.calendar-controls button,
+.toggle-button,
+.danger-button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.calendar-card,
+.calendar-tasks,
+.settings-card {
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.calendar-weekdays,
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  padding: 12px;
+  font-weight: 600;
+}
+
+.calendar-day {
+  min-height: 90px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+}
+
+.calendar-day.today {
+  border: 2px solid #ffffff;
+  border-radius: 8px;
+}
+
+.day-number {
+  font-weight: 600;
+}
+
+.today-label {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.calendar-day.empty {
+  background: transparent;
+}
+
+.calendar-tasks {
+  margin-top: 25px;
+}
+
+.calendar-task {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  margin-top: 8px;
+  border-radius: 10px;
+}
+
+.completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.settings-header {
+  display: block;
+}
+
+.settings-card {
+  max-width: 800px;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row h3 {
+  margin: 0 0 5px;
+}
+
+.settings-row p {
+  margin: 0;
+  opacity: 0.65;
+}
+
+.toggle-button.active {
+  font-weight: 600;
+}
+
+.settings-status {
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+.danger-button {
+  font-weight: 600;
+}
