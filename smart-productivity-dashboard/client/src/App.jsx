@@ -6,20 +6,62 @@ import Tasks from "./pages/Tasks";
 import Daily from "./pages/Daily";
 import Calendar from "./pages/calendar";
 import Settings from "./pages/settings";
-import ProtectedRoutes from "./components/ProtectedRoutes";
 
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Dashboard />} />
+        {/* Login page is public */}
         <Route path="/login" element={<Login />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/daily" element={<Daily />} />
-        <Route path="/calendar" element={<Calendar />} />
-        <Route path="/settings" element={<Settings />} />
+
+        {/* All other pages require login */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <Tasks />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/daily"
+          element={
+            <ProtectedRoute>
+              <Daily />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <Calendar />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          }
+        />
 
       </Routes>
     </BrowserRouter>
