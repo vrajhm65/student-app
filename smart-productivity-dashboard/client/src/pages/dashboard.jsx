@@ -148,7 +148,7 @@ const response = await fetch("http://localhost:5000/api/focus", {
   headers: {
     Authorization: `Bearer ${token}`,
   },
-});
+})
             .then((response) => response.json())
             .then((data) => {
                 console.log("Focus sessions:", data);
