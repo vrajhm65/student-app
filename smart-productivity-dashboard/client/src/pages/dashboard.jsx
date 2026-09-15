@@ -28,6 +28,77 @@ function Dashboard() {
     }, []);
 
     useEffect(() => {
+    if (tasks.length === 0) {
+        setCurrentStreak(0);
+        return;
+    }
+
+    const completedDates = [
+        ...new Set(
+            tasks
+                .filter((task) => task.completed && task.completedAt)
+                .map((task) => {
+                    const date = new Date(task.completedAt);
+
+                    return `${date.getFullYear()}-${String(
+                        date.getMonth() + 1
+                    ).padStart(2, "0")}-${String(
+                        date.getDate()
+                    ).padStart(2, "0")}`;
+                })
+        )
+    ].sort((a, b) => new Date(b) - new Date(a));
+
+    if (completedDates.length === 0) {
+        setCurrentStreak(0);
+        return;
+    }
+
+    const today = new Date();
+
+    const todayString = `${today.getFullYear()}-${String(
+        today.getMonth() + 1
+    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const yesterdayString = `${yesterday.getFullYear()}-${String(
+        yesterday.getMonth() + 1
+    ).padStart(2, "0")}-${String(
+        yesterday.getDate()
+    ).padStart(2, "0")}`;
+
+    if (
+        completedDates[0] !== todayString &&
+        completedDates[0] !== yesterdayString
+    ) {
+        setCurrentStreak(0);
+        return;
+    }
+
+    let streak = 1;
+
+    for (let i = 1; i < completedDates.length; i++) {
+        const previousDate = new Date(completedDates[i - 1]);
+        const currentDate = new Date(completedDates[i]);
+
+        const difference =
+            (previousDate - currentDate) / (1000 * 60 * 60 * 24);
+
+        if (difference === 1) {
+            streak++;
+        } else {
+            break;
+        }
+    }
+
+    setCurrentStreak(streak);
+}, [tasks]);
+
+
+
+    useEffect(() => {
     fetch("http://localhost:5000/api/focus")
         .then((response) => response.json())
         .then((data) => {
