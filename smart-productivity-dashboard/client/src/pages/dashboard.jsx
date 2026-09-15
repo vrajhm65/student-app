@@ -11,12 +11,18 @@ import { Link } from "react-router-dom";
 
 function Dashboard() {
     const [tasks, setTasks] = useState([]);
+    const token = localStorage.getItem("token");
+    
     const [focusSeconds, setFocusSeconds] = useState(0);
     const [focusSessions, setFocusSessions] = useState([]);
     const [currentStreak, setCurrentStreak] = useState(0);
 
     useEffect(() => {
-        fetch("http://localhost:5000/api/tasks")
+        fetch("http://localhost:5000/api/tasks", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+})
             .then((response) => response.json())
             .then((data) => {
                 console.log("Dashboard tasks:", data);
