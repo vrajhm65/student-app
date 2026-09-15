@@ -7,7 +7,7 @@ import Daily from "./pages/Daily";
 import Calendar from "./pages/calendar";
 import Settings from "./pages/settings";
 
-import ProtectedRoute from "./components/ProtectedRoute";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
