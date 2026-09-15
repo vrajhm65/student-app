@@ -96,16 +96,14 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
           const result = await response.json();
 
           if (!response.ok) {
-            console.error(
-              "Focus session save failed:",
-              result
-            );
-          } else {
-            console.log(
-              "Focus session saved:",
-              result
-            );
-          }
+    console.error("Focus session save failed:", result);
+} else {
+    console.log("Focus session saved:", result);
+
+    if (onSessionSaved) {
+        onSessionSaved(result.session);
+    }
+}
         } catch (error) {
           console.error(
             "Error saving focus session:",
