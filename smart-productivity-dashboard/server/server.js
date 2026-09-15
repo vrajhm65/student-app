@@ -15,11 +15,13 @@ const PORT = 5000; // choosing port number for server to run on
 const taskRoutes = require("./routes/taskRoutes");
 const planRoutes = require("./routes/planRoutes");
 const focusRoutes = require("./routes/focusRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 app.use(express.json()); // express needs to understand the json .so it acts as a translator
 app.use("/api/tasks", taskRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/focus", focusRoutes);
+app.use("/api/auth", authRoutes);
 
 
 app.get("/", (req, res)=>{
