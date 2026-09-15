@@ -142,25 +142,29 @@ function Dashboard() {
 
     // Get focus sessions
     useEffect(() => {
-        fetch("http://localhost:5000/api/focus")
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Focus sessions:", data);
+    fetch("http://localhost:5000/api/focus", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Focus sessions:", data);
 
-                if (Array.isArray(data)) {
-                    setFocusSessions(data);
-                } else {
-                    setFocusSessions([]);
-                }
-            })
-            .catch((error) => {
-                console.error(
-                    "Focus session error:",
-                    error
-                );
+            if (Array.isArray(data)) {
+                setFocusSessions(data);
+            } else {
                 setFocusSessions([]);
-            });
-    }, []);
+            }
+        })
+        .catch((error) => {
+            console.error(
+                "Focus session error:",
+                error
+            );
+            setFocusSessions([]);
+        });
+}, [token]);
 
     const totalTasks = tasks.length;
 
