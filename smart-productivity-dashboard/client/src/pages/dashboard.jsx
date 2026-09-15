@@ -190,6 +190,12 @@ const totalFocusMinutes = Math.floor(
             <FocusTimer
     seconds={focusSeconds}
     setSeconds={setFocusSeconds}
+    onSessionSaved={(session) => {
+        setFocusSessions((previousSessions) => [
+            session,
+            ...previousSessions,
+        ]);
+    }}
 />
 
           <section className="dashboard-grid">
