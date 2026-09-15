@@ -13,6 +13,7 @@ function Dashboard() {
     const [tasks, setTasks] = useState([]);
     const [focusSeconds, setFocusSeconds] = useState(0);
     const [focusSessions, setFocusSessions] = useState([]);
+    const [currentStreak, setCurrentStreak] = useState(0);
 
     useEffect(() => {
         fetch("http://localhost:5000/api/tasks")
