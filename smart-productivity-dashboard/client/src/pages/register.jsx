@@ -98,7 +98,7 @@ function Register() {
           />
 
           <button type="submit" disabled={loading}>
-            {loading ? "Creating account..." : "Create Account"}
+            { loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 
