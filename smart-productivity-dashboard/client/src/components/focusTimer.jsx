@@ -4,13 +4,24 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
   const [running, setRunning] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load saved timer state from MongoDB
+  const API_URL = "http://localhost:5000/api/focus";
+  const TIMER_URL = `${API_URL}/timer`;
+
+  const getHeaders = () => {
+    const token = localStorage.getItem("token");
+
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
   useEffect(() => {
     const loadTimer = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:5000/api/focus/timer"
-        );
+        const response = await fetch(TIMER_URL, {
+          headers: getHeaders(),
+        });
 
         const data = await response.json();
 
@@ -20,8 +31,7 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
         }
 
         setSeconds(data.seconds);
-        setRunning(false);
-
+        setRunning(data.running);
       } catch (error) {
         console.error("Error loading timer:", error);
       } finally {
@@ -32,7 +42,6 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
     loadTimer();
   }, [setSeconds]);
 
-  // Timer countdown
   useEffect(() => {
     if (!running) return;
 
@@ -43,22 +52,16 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
     return () => clearInterval(timer);
   }, [running, setSeconds]);
 
-  // Save current timer state
   const saveTimer = async (currentSeconds, currentRunning) => {
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/focus/timer",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            seconds: currentSeconds,
-            running: currentRunning,
-          }),
-        }
-      );
+      const response = await fetch(TIMER_URL, {
+        method: "PUT",
+        headers: getHeaders(),
+        body: JSON.stringify({
+          seconds: currentSeconds,
+          running: currentRunning,
+        }),
+      });
 
       const data = await response.json();
 
@@ -72,48 +75,34 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
 
   const handleStartPause = async () => {
     if (running) {
-      // PAUSE
       setRunning(false);
 
       await saveTimer(seconds, false);
 
-      // Also save the completed/current focus session
       if (seconds > 0) {
         try {
-          const response = await fetch(
-            "http://localhost:5000/api/focus",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                duration: seconds,
-              }),
-            }
-          );
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify({
+              duration: seconds,
+            }),
+          });
 
           const result = await response.json();
 
           if (!response.ok) {
-    console.error("Focus session save failed:", result);
-} else {
-    console.log("Focus session saved:", result);
-
-    if (onSessionSaved) {
-        onSessionSaved(result.session);
-    }
-}
+            console.error("Focus session save failed:", result);
+          } else {
+            if (onSessionSaved) {
+              onSessionSaved(result.session);
+            }
+          }
         } catch (error) {
-          console.error(
-            "Error saving focus session:",
-            error
-          );
+          console.error("Error saving focus session:", error);
         }
       }
-
     } else {
-      // START
       setRunning(true);
 
       await saveTimer(seconds, true);
@@ -148,17 +137,11 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
         {String(remainingSeconds).padStart(2, "0")}
       </h2>
 
-      <button
-        type="button"
-        onClick={handleStartPause}
-      >
+      <button type="button" onClick={handleStartPause}>
         {running ? "Pause" : "Start"}
       </button>
 
-      <button
-        type="button"
-        onClick={handleReset}
-      >
+      <button type="button" onClick={handleReset}>
         Reset
       </button>
     </section>
