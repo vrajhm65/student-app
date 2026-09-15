@@ -1,22 +1,20 @@
 const express = require("express");
-
 const router = express.Router();
 
+const protect = require("../middleware/authMiddleware");
+
 const {
-    getPlans,
-    createPlan,
-    deletePlan,
-    updatePlan
+  getPlans,
+  createPlan,
+  updatePlan,
+  deletePlan,
 } = require("../controllers/planController");
 
+router.use(protect);
 
 router.get("/", getPlans);
-
 router.post("/", createPlan);
-
-router.delete("/:id", deletePlan);
-
 router.put("/:id", updatePlan);
-
+router.delete("/:id", deletePlan);
 
 module.exports = router;
