@@ -20,7 +20,7 @@ function App() {
         <Route path="/login" element={<Login />} />
 
         {/* Register page is public */}
-        
+        <Route path="/register" element={<Register />} />
 
         {/* All other pages require login */}
         <Route
