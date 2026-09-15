@@ -142,13 +142,7 @@ function Dashboard() {
 
     // Get focus sessions
     useEffect(() => {
-        const token = localStorage.getItem("token");
-
-const response = await fetch("http://localhost:5000/api/focus", {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-})
+        fetch("http://localhost:5000/api/focus")
             .then((response) => response.json())
             .then((data) => {
                 console.log("Focus sessions:", data);
