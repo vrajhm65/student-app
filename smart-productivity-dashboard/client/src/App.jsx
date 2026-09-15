@@ -2,27 +2,22 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
+import Register from "./pages/register";
 import Tasks from "./pages/Tasks";
 import Daily from "./pages/Daily";
 import Calendar from "./pages/calendar";
 import Settings from "./pages/settings";
-import Register from "./pages/register";
 
-<
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Login page is public */}
         <Route path="/login" element={<Login />} />
 
-        {/* Register page is public */}
         <Route path="/register" element={<Register />} />
 
-        {/* All other pages require login */}
         <Route
           path="/"
           element={
@@ -67,7 +62,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );
