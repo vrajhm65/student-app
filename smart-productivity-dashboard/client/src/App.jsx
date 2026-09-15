@@ -8,8 +8,7 @@ import Calendar from "./pages/calendar";
 import Settings from "./pages/settings";
 import Register from "./pages/register";
 
-<Route path="/register" element={<Register />} />
-
+<
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -19,6 +18,9 @@ function App() {
 
         {/* Login page is public */}
         <Route path="/login" element={<Login />} />
+
+        {/* Register page is public */}
+        
 
         {/* All other pages require login */}
         <Route
