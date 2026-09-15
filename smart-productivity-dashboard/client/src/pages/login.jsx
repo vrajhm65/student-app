@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+function login() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
