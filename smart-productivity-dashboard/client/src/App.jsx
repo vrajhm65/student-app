@@ -17,7 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/daily" element={<Daily />} />
-        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/calender" element={<Calender />} />
         <Route path="/settings" element={<Settings />} />
 
       </Routes>
