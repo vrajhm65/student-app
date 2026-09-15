@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import Sidebar from "<div styleName={} />
-<pages></pages>/sidebar";
+import Sidebar from "../pages/sidebar";
 import Header from "../components/header";
 
 function Calendar() {
