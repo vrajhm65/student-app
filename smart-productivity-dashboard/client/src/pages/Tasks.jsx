@@ -9,7 +9,11 @@ function Tasks() {
 
   // Get all tasks
   useEffect(() => {
-    fetch("http://localhost:5000/api/tasks")
+    fetch("http://localhost:5000/api/tasks", {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+})
       .then((response) => response.json())
       .then((data) => {
         console.log("Tasks received from backend:", data);
