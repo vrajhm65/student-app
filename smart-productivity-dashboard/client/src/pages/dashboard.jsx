@@ -8,6 +8,7 @@ function Dashboard() {
   const [tasks, setTasks] = useState([]);
   const [plans, setPlans] = useState([]);
   const [focusSessions, setFocusSessions] = useState([]);
+  const [focusSeconds, setFocusSeconds] = useState(0);
 
   const token = localStorage.getItem("token");
 
