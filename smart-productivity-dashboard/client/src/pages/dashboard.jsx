@@ -422,33 +422,58 @@ const deleteTask = async (task) => {
                   {tasks.slice(0, 6).map((task) => (
 
                     <div
-                      className="task-preview"
+                      className={`task-preview ${
+                        task.completed ? "is-completed" : ""
+                      }`}
                       key={task.id}
                     >
 
-                      <span
-                        className={`task-dot ${
-                          task.completed ? "completed" : ""
+                      <button
+                        type="button"
+                        className={`task-check-button ${
+                          task.completed ? "checked" : ""
                         }`}
-                      >
-                        {task.completed ? "✓" : ""}
-                      </span>
-
-                      <span
-                        className={
+                        onClick={() => toggleTask(task)}
+                        aria-label={
                           task.completed
-                            ? "task-preview-title completed"
-                            : "task-preview-title"
+                            ? "Mark task as pending"
+                            : "Mark task as completed"
                         }
                       >
-                        {task.title}
-                      </span>
+                        {task.completed ? "✓" : ""}
+                      </button>
 
-                      <span className="task-preview-state">
-                        {task.completed
-                          ? "Done"
-                          : "Pending"}
-                      </span>
+                      <div className="task-preview-main">
+                        <span
+                          className={
+                            task.completed
+                              ? "task-preview-title completed"
+                              : "task-preview-title"
+                          }
+                        >
+                          {task.title}
+                        </span>
+
+                        <span className="task-preview-state">
+                          {task.completed ? "Completed" : "Pending"}
+                        </span>
+                      </div>
+
+                      <div className="task-preview-actions">
+                        <button
+                          type="button"
+                          onClick={() => editTask(task)}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => deleteTask(task)}
+                        >
+                          Delete
+                        </button>
+                      </div>
 
                     </div>
 
