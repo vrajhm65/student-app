@@ -591,3 +591,218 @@ code {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================
+   FINAL DASHBOARD
+========================= */
+
+.dashboard-page {
+  padding: 30px;
+}
+
+.dashboard-welcome {
+  margin-bottom: 28px;
+}
+
+.dashboard-welcome h1 {
+  margin: 5px 0;
+  font-size: 32px;
+}
+
+.dashboard-date {
+  margin: 0;
+  opacity: 0.6;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.dashboard-stat-card {
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.dashboard-stat-card span {
+  opacity: 0.6;
+  font-size: 14px;
+}
+
+.dashboard-stat-card strong {
+  font-size: 27px;
+}
+
+.dashboard-stat-card small {
+  opacity: 0.6;
+  font-size: 13px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.dashboard-panel {
+  padding: 22px;
+  border-radius: 16px;
+}
+
+.dashboard-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.dashboard-panel-header h2 {
+  margin: 5px 0 0;
+  font-size: 21px;
+}
+
+.dashboard-panel-header a {
+  text-decoration: none;
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.dashboard-task-list,
+.dashboard-plan-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-task,
+.dashboard-plan {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.dashboard-task:last-child,
+.dashboard-plan:last-child {
+  border-bottom: none;
+}
+
+.dashboard-task-check {
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.dashboard-task-check.completed {
+  font-weight: bold;
+}
+
+.task-completed {
+  text-decoration: line-through;
+  opacity: 0.45;
+}
+
+.dashboard-plan-time {
+  width: 55px;
+  font-weight: 600;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.dashboard-plan-check {
+  margin-left: auto;
+  opacity: 0.7;
+}
+
+.dashboard-empty {
+  padding: 30px 0;
+  text-align: center;
+}
+
+.dashboard-empty p {
+  opacity: 0.6;
+  margin-bottom: 10px;
+}
+
+.dashboard-empty a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.focus-panel {
+  min-height: 230px;
+}
+
+.productivity-progress {
+  margin-bottom: 22px;
+}
+
+.progress-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 9px;
+}
+
+.progress-heading span {
+  opacity: 0.65;
+}
+
+.dashboard-progress-bar {
+  height: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.1);
+}
+
+.dashboard-progress-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.dashboard-motivation {
+  margin-top: 25px;
+  padding: 16px;
+  border-radius: 12px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+
+@media (max-width: 900px) {
+
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .dashboard-page {
+    padding: 20px;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-welcome h1 {
+    font-size: 26px;
+  }
+
+}
