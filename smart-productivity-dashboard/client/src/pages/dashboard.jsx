@@ -67,6 +67,107 @@ function Dashboard() {
       ? Math.round((completedPlans / plans.length) * 100)
       : 0;
 
+      const toggleTask = async (task) => {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/tasks/${task.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          completed: !task.completed,
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("Task update failed:", result);
+      return;
+    }
+
+    setTasks((previousTasks) =>
+      previousTasks.map((currentTask) =>
+        currentTask.id === task.id ? result.task : currentTask
+      )
+    );
+  } catch (error) {
+    console.error("Error updating task:", error);
+  }
+};
+
+const editTask = async (task) => {
+  const newTitle = prompt("Edit task:", task.title);
+
+  if (!newTitle || !newTitle.trim()) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/tasks/${task.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: newTitle.trim(),
+        }),
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("Task edit failed:", result);
+      return;
+    }
+
+    setTasks((previousTasks) =>
+      previousTasks.map((currentTask) =>
+        currentTask.id === task.id ? result.task : currentTask
+      )
+    );
+  } catch (error) {
+    console.error("Error editing task:", error);
+  }
+};
+
+const deleteTask = async (task) => {
+  try {
+    const response = await fetch(
+      `http://localhost:5000/api/tasks/${task.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.error("Task delete failed:", result);
+      return;
+    }
+
+    setTasks((previousTasks) =>
+      previousTasks.filter(
+        (currentTask) => currentTask.id !== task.id
+      )
+    );
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
+};
+
   const today = new Date();
 
   const dateText = today.toLocaleDateString("en-US", {
