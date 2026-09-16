@@ -47,7 +47,6 @@ function Dashboard() {
   }, []);
 
   const completedTasks = tasks.filter((task) => task.completed).length;
-
   const completedPlans = plans.filter((plan) => plan.completed).length;
 
   const totalFocusSeconds = focusSessions.reduce(
@@ -67,106 +66,106 @@ function Dashboard() {
       ? Math.round((completedPlans / plans.length) * 100)
       : 0;
 
-      const toggleTask = async (task) => {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/tasks/${task.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          completed: !task.completed,
-        }),
+  const toggleTask = async (task) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/tasks/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            completed: !task.completed,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Task update failed:", result);
+        return;
       }
-    );
 
-    const result = await response.json();
+      setTasks((previousTasks) =>
+        previousTasks.map((currentTask) =>
+          currentTask.id === task.id ? result.task : currentTask
+        )
+      );
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
 
-    if (!response.ok) {
-      console.error("Task update failed:", result);
+  const editTask = async (task) => {
+    const newTitle = prompt("Edit task:", task.title);
+
+    if (!newTitle || !newTitle.trim()) {
       return;
     }
 
-    setTasks((previousTasks) =>
-      previousTasks.map((currentTask) =>
-        currentTask.id === task.id ? result.task : currentTask
-      )
-    );
-  } catch (error) {
-    console.error("Error updating task:", error);
-  }
-};
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/tasks/${task.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: newTitle.trim(),
+          }),
+        }
+      );
 
-const editTask = async (task) => {
-  const newTitle = prompt("Edit task:", task.title);
+      const result = await response.json();
 
-  if (!newTitle || !newTitle.trim()) {
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/tasks/${task.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: newTitle.trim(),
-        }),
+      if (!response.ok) {
+        console.error("Task edit failed:", result);
+        return;
       }
-    );
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error("Task edit failed:", result);
-      return;
+      setTasks((previousTasks) =>
+        previousTasks.map((currentTask) =>
+          currentTask.id === task.id ? result.task : currentTask
+        )
+      );
+    } catch (error) {
+      console.error("Error editing task:", error);
     }
+  };
 
-    setTasks((previousTasks) =>
-      previousTasks.map((currentTask) =>
-        currentTask.id === task.id ? result.task : currentTask
-      )
-    );
-  } catch (error) {
-    console.error("Error editing task:", error);
-  }
-};
+  const deleteTask = async (task) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/tasks/${task.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-const deleteTask = async (task) => {
-  try {
-    const response = await fetch(
-      `http://localhost:5000/api/tasks/${task.id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Task delete failed:", result);
+        return;
       }
-    );
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      console.error("Task delete failed:", result);
-      return;
+      setTasks((previousTasks) =>
+        previousTasks.filter(
+          (currentTask) => currentTask.id !== task.id
+        )
+      );
+    } catch (error) {
+      console.error("Error deleting task:", error);
     }
-
-    setTasks((previousTasks) =>
-      previousTasks.filter(
-        (currentTask) => currentTask.id !== task.id
-      )
-    );
-  } catch (error) {
-    console.error("Error deleting task:", error);
-  }
-};
+  };
 
   const today = new Date();
 
@@ -201,9 +200,7 @@ const deleteTask = async (task) => {
         <Header />
 
         <section className="dashboard-page">
-
           {/* TOP */}
-
           <div className="dashboard-top">
             <div>
               <span className="dashboard-eyebrow">
@@ -220,11 +217,8 @@ const deleteTask = async (task) => {
             </Link>
           </div>
 
-
           {/* OVERVIEW */}
-
           <div className="overview-grid">
-
             <div className="overview-card">
               <div className="overview-card-top">
                 <span>Tasks</span>
@@ -237,10 +231,11 @@ const deleteTask = async (task) => {
               </div>
 
               <div className="overview-meta">
-                completed
+                {tasks.length === 0
+                  ? "no tasks yet"
+                  : `${tasks.length - completedTasks} remaining`}
               </div>
             </div>
-
 
             <div className="overview-card">
               <div className="overview-card-top">
@@ -254,10 +249,11 @@ const deleteTask = async (task) => {
               </div>
 
               <div className="overview-meta">
-                completed
+                {plans.length === 0
+                  ? "no plans yet"
+                  : `${plans.length - completedPlans} remaining`}
               </div>
             </div>
-
 
             <div className="overview-card">
               <div className="overview-card-top">
@@ -271,10 +267,11 @@ const deleteTask = async (task) => {
               </div>
 
               <div className="overview-meta">
-                total sessions
+                {focusSessions.length === 0
+                  ? "no sessions yet"
+                  : `${focusSessions.length} sessions`}
               </div>
             </div>
-
 
             <div className="overview-card">
               <div className="overview-card-top">
@@ -287,66 +284,42 @@ const deleteTask = async (task) => {
                 <span>%</span>
               </div>
 
-              <div className="overview-meta">
-                task completion
-              </div>
+              <div className="overview-meta">task completion</div>
             </div>
-
           </div>
 
-
-          {/* CONTENT */}
-
+          {/* MAIN CONTENT */}
           <div className="dashboard-content-grid">
-
-            {/* TODAY */}
-
+            {/* TODAY'S PLAN */}
             <section className="dashboard-section schedule-section">
-
               <div className="dashboard-section-heading">
                 <div>
-                  <span className="dashboard-eyebrow">
-                    SCHEDULE
-                  </span>
-
+                  <span className="dashboard-eyebrow">SCHEDULE</span>
                   <h2>Today's plan</h2>
                 </div>
 
-                <Link to="/daily">
-                  View daily →
-                </Link>
+                <Link to="/daily">View daily →</Link>
               </div>
 
-
               {todayPlans.length === 0 ? (
-
                 <div className="dashboard-empty">
                   <div className="empty-line" />
 
                   <h3>No plans scheduled</h3>
 
-                  <p>
-                    Add activities to organize your day.
-                  </p>
+                  <p>Add activities to organize your day.</p>
 
-                  <Link to="/daily">
-                    Create a plan
-                  </Link>
+                  <Link to="/daily">Create a plan</Link>
                 </div>
-
               ) : (
-
                 <div className="schedule-list">
-
                   {todayPlans.slice(0, 6).map((plan) => (
-
                     <div
                       className={`schedule-item ${
                         plan.completed ? "is-complete" : ""
                       }`}
                       key={plan.id}
                     >
-
                       <span className="schedule-time">
                         {plan.time}
                       </span>
@@ -354,7 +327,6 @@ const deleteTask = async (task) => {
                       <span className="schedule-line" />
 
                       <div className="schedule-content">
-
                         <span className="schedule-title">
                           {plan.title}
                         </span>
@@ -364,70 +336,43 @@ const deleteTask = async (task) => {
                             Completed
                           </span>
                         )}
-
                       </div>
-
                     </div>
-
                   ))}
-
                 </div>
-
               )}
-
             </section>
 
-
             {/* TASKS */}
-
             <section className="dashboard-section tasks-section">
-
               <div className="dashboard-section-heading">
-
                 <div>
-                  <span className="dashboard-eyebrow">
-                    TASKS
-                  </span>
-
+                  <span className="dashboard-eyebrow">TASKS</span>
                   <h2>Recent tasks</h2>
                 </div>
 
-                <Link to="/tasks">
-                  View all →
-                </Link>
-
+                <Link to="/tasks">View all →</Link>
               </div>
 
-
               {tasks.length === 0 ? (
-
                 <div className="dashboard-empty">
                   <div className="empty-line" />
 
                   <h3>Your task list is empty</h3>
 
-                  <p>
-                    Add something you want to accomplish.
-                  </p>
+                  <p>Add something you want to accomplish.</p>
 
-                  <Link to="/tasks">
-                    Create a task
-                  </Link>
+                  <Link to="/tasks">Create a task</Link>
                 </div>
-
               ) : (
-
                 <div className="task-preview-list">
-
                   {tasks.slice(0, 6).map((task) => (
-
                     <div
                       className={`task-preview ${
                         task.completed ? "is-completed" : ""
                       }`}
                       key={task.id}
                     >
-
                       <button
                         type="button"
                         className={`task-check-button ${
@@ -463,6 +408,7 @@ const deleteTask = async (task) => {
                         <button
                           type="button"
                           onClick={() => editTask(task)}
+                          aria-label={`Edit ${task.title}`}
                         >
                           Edit
                         </button>
@@ -470,77 +416,52 @@ const deleteTask = async (task) => {
                         <button
                           type="button"
                           onClick={() => deleteTask(task)}
+                          aria-label={`Delete ${task.title}`}
                         >
                           Delete
                         </button>
                       </div>
-
                     </div>
-
                   ))}
-
                 </div>
-
               )}
-
             </section>
 
-
-            {/* FOCUS */}
-
+            {/* FOCUS TIMER */}
             <section className="dashboard-section focus-section">
-
               <div className="dashboard-section-heading">
-
                 <div>
-                  <span className="dashboard-eyebrow">
-                    FOCUS
-                  </span>
-
+                  <span className="dashboard-eyebrow">FOCUS</span>
                   <h2>Deep work</h2>
                 </div>
-
               </div>
 
               <div className="focus-timer-wrapper">
                 <FocusTimer
-  seconds={focusSeconds}
-  setSeconds={setFocusSeconds}
-  onSessionSaved={(session) => {
-    setFocusSessions((previousSessions) => [
-      ...previousSessions,
-      session,
-    ]);
-  }}
-/>
+                  seconds={focusSeconds}
+                  setSeconds={setFocusSeconds}
+                  onSessionSaved={(session) => {
+                    setFocusSessions((previousSessions) => [
+                      ...previousSessions,
+                      session,
+                    ]);
+                  }}
+                />
               </div>
-
             </section>
 
-
             {/* PROGRESS */}
-
             <section className="dashboard-section progress-section">
-
               <div className="dashboard-section-heading">
-
                 <div>
-                  <span className="dashboard-eyebrow">
-                    PROGRESS
-                  </span>
-
+                  <span className="dashboard-eyebrow">PROGRESS</span>
                   <h2>Today's performance</h2>
                 </div>
 
-                <Link to="/calendar">
-                  History →
-                </Link>
-
+                <Link to="/calendar">History →</Link>
               </div>
 
-
               <div className="metric-row">
-
                 <div className="metric-label">
                   <span>Tasks</span>
                   <strong>{taskProgress}%</strong>
@@ -553,12 +474,9 @@ const deleteTask = async (task) => {
                     }}
                   />
                 </div>
-
               </div>
 
-
               <div className="metric-row">
-
                 <div className="metric-label">
                   <span>Daily plans</span>
                   <strong>{planProgress}%</strong>
@@ -571,12 +489,9 @@ const deleteTask = async (task) => {
                     }}
                   />
                 </div>
-
               </div>
 
-
               <div className="progress-message">
-
                 <span className="message-mark">✦</span>
 
                 <p>
@@ -588,13 +503,9 @@ const deleteTask = async (task) => {
                     ? "You're building momentum. Keep going."
                     : "Start with one task and build momentum."}
                 </p>
-
               </div>
-
             </section>
-
           </div>
-
         </section>
       </main>
     </div>
