@@ -155,10 +155,8 @@ function Calendar() {
   };
 
   const selectDay = (day) => {
-    setSelectedDate(
-      new Date(year, month, day)
-    );
-  };
+  setSelectedDate(new Date(year, month, day, 12, 0, 0));
+};
 
   const isToday = (day) => {
     const today = new Date();
