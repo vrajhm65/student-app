@@ -377,7 +377,16 @@ function Dashboard() {
               </div>
 
               <div className="focus-timer-wrapper">
-                <FocusTimer />
+                <FocusTimer
+  seconds={focusSeconds}
+  setSeconds={setFocusSeconds}
+  onSessionSaved={(session) => {
+    setFocusSessions((previousSessions) => [
+      ...previousSessions,
+      session,
+    ]);
+  }}
+/>
               </div>
 
             </section>
