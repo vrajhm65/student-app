@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Sidebar from "../components/sidebar";
 import Header from "../components/header";
 import FocusTimer from "../components/FocusTimer";
@@ -10,50 +11,46 @@ function Dashboard() {
 
   const token = localStorage.getItem("token");
 
-  const headers = {
+  const authHeaders = {
     Authorization: `Bearer ${token}`,
   };
 
-  const loadDashboardData = async () => {
-    try {
-      const [taskResponse, planResponse, focusResponse] =
-        await Promise.all([
-          fetch("http://localhost:5000/api/tasks", { headers }),
-          fetch("http://localhost:5000/api/plans", { headers }),
-          fetch("http://localhost:5000/api/focus", { headers }),
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        const [tasksRes, plansRes, focusRes] = await Promise.all([
+          fetch("http://localhost:5000/api/tasks", {
+            headers: authHeaders,
+          }),
+          fetch("http://localhost:5000/api/plans", {
+            headers: authHeaders,
+          }),
+          fetch("http://localhost:5000/api/focus", {
+            headers: authHeaders,
+          }),
         ]);
 
-      const taskData = await taskResponse.json();
-      const planData = await planResponse.json();
-      const focusData = await focusResponse.json();
+        const tasksData = await tasksRes.json();
+        const plansData = await plansRes.json();
+        const focusData = await focusRes.json();
 
-      if (Array.isArray(taskData)) {
-        setTasks(taskData);
+        if (Array.isArray(tasksData)) setTasks(tasksData);
+        if (Array.isArray(plansData)) setPlans(plansData);
+        if (Array.isArray(focusData)) setFocusSessions(focusData);
+      } catch (error) {
+        console.error("Dashboard loading error:", error);
       }
+    };
 
-      if (Array.isArray(planData)) {
-        setPlans(planData);
-      }
-
-      if (Array.isArray(focusData)) {
-        setFocusSessions(focusData);
-      }
-    } catch (error) {
-      console.error("Dashboard data error:", error);
-    }
-  };
-
-  useEffect(() => {
-    loadDashboardData();
+    loadDashboard();
   }, []);
 
   const completedTasks = tasks.filter((task) => task.completed).length;
-  const pendingTasks = tasks.length - completedTasks;
 
   const completedPlans = plans.filter((plan) => plan.completed).length;
 
   const totalFocusSeconds = focusSessions.reduce(
-    (total, session) => total + (Number(session.duration) || 0),
+    (total, session) => total + Number(session.duration || 0),
     0
   );
 
@@ -77,30 +74,22 @@ function Dashboard() {
     day: "numeric",
   });
 
-  const todayDate = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Asia/Kolkata",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(today);
-
-  const formatDate = (date) => {
-    return new Intl.DateTimeFormat("en-CA", {
+  const formatDate = (date) =>
+    new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Kolkata",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
     }).format(new Date(date));
-  };
+
+  const todayString = formatDate(today);
 
   const todayPlans = plans
     .filter((plan) => {
       if (!plan.createdAt) return true;
-      return formatDate(plan.createdAt) === todayDate;
+      return formatDate(plan.createdAt) === todayString;
     })
     .sort((a, b) => a.time.localeCompare(b.time));
-
-  const recentTasks = tasks.slice(0, 5);
 
   return (
     <div className="app-layout">
@@ -111,206 +100,170 @@ function Dashboard() {
 
         <section className="dashboard-page">
 
-          {/* HEADER */}
+          {/* TOP */}
 
-          <div className="dashboard-welcome">
+          <div className="dashboard-top">
             <div>
-              <p className="section-label">TODAY'S DASHBOARD</p>
+              <span className="dashboard-eyebrow">
+                TODAY'S DASHBOARD
+              </span>
 
               <h1>Good to see you.</h1>
 
-              <p className="dashboard-date">{dateText}</p>
+              <p>{dateText}</p>
             </div>
+
+            <Link to="/tasks" className="dashboard-action">
+              + Add task
+            </Link>
           </div>
 
 
-          {/* STATS */}
+          {/* OVERVIEW */}
 
-          <div className="dashboard-stats">
+          <div className="overview-grid">
 
-            <div className="dashboard-stat-card">
-              <span>Tasks</span>
-
-              <strong>
-                {completedTasks} / {tasks.length}
-              </strong>
-
-              <small>
-                {pendingTasks} pending
-              </small>
-            </div>
-
-
-            <div className="dashboard-stat-card">
-              <span>Daily Plans</span>
-
-              <strong>
-                {completedPlans} / {plans.length}
-              </strong>
-
-              <small>
-                {planProgress}% completed
-              </small>
-            </div>
-
-
-            <div className="dashboard-stat-card">
-              <span>Focus Time</span>
-
-              <strong>
-                {focusMinutes}
-                <small> min</small>
-              </strong>
-
-              <small>
-                Total focus sessions
-              </small>
-            </div>
-
-
-            <div className="dashboard-stat-card">
-              <span>Productivity</span>
-
-              <strong>{taskProgress}%</strong>
-
-              <small>
-                Task completion
-              </small>
-            </div>
-
-          </div>
-
-
-          {/* MAIN GRID */}
-
-          <div className="dashboard-grid">
-
-            {/* TASKS */}
-
-            <div className="dashboard-panel">
-
-              <div className="dashboard-panel-header">
-
-                <div>
-                  <p className="section-label">TASKS</p>
-
-                  <h2>Your tasks</h2>
-                </div>
-
-                <a href="/tasks">View all</a>
-
+            <div className="overview-card">
+              <div className="overview-card-top">
+                <span>Tasks</span>
+                <span className="overview-icon">✓</span>
               </div>
 
+              <div className="overview-value">
+                {completedTasks}
+                <span>/ {tasks.length}</span>
+              </div>
 
-              {recentTasks.length === 0 ? (
-
-                <div className="dashboard-empty">
-                  <p>No tasks yet.</p>
-
-                  <a href="/tasks">
-                    Add your first task →
-                  </a>
-                </div>
-
-              ) : (
-
-                <div className="dashboard-task-list">
-
-                  {recentTasks.map((task) => (
-
-                    <div
-                      className="dashboard-task"
-                      key={task.id}
-                    >
-
-                      <div
-                        className={`dashboard-task-check ${
-                          task.completed ? "completed" : ""
-                        }`}
-                      >
-                        {task.completed ? "✓" : ""}
-                      </div>
-
-                      <span
-                        className={
-                          task.completed
-                            ? "task-completed"
-                            : ""
-                        }
-                      >
-                        {task.title}
-                      </span>
-
-                    </div>
-
-                  ))}
-
-                </div>
-
-              )}
-
+              <div className="overview-meta">
+                completed
+              </div>
             </div>
 
 
-            {/* TODAY PLAN */}
+            <div className="overview-card">
+              <div className="overview-card-top">
+                <span>Daily plans</span>
+                <span className="overview-icon">◷</span>
+              </div>
 
-            <div className="dashboard-panel">
+              <div className="overview-value">
+                {completedPlans}
+                <span>/ {plans.length}</span>
+              </div>
 
-              <div className="dashboard-panel-header">
+              <div className="overview-meta">
+                completed
+              </div>
+            </div>
 
+
+            <div className="overview-card">
+              <div className="overview-card-top">
+                <span>Focus time</span>
+                <span className="overview-icon">◉</span>
+              </div>
+
+              <div className="overview-value">
+                {focusMinutes}
+                <span> min</span>
+              </div>
+
+              <div className="overview-meta">
+                total sessions
+              </div>
+            </div>
+
+
+            <div className="overview-card">
+              <div className="overview-card-top">
+                <span>Productivity</span>
+                <span className="overview-icon">↗</span>
+              </div>
+
+              <div className="overview-value">
+                {taskProgress}
+                <span>%</span>
+              </div>
+
+              <div className="overview-meta">
+                task completion
+              </div>
+            </div>
+
+          </div>
+
+
+          {/* CONTENT */}
+
+          <div className="dashboard-content-grid">
+
+            {/* TODAY */}
+
+            <section className="dashboard-section schedule-section">
+
+              <div className="dashboard-section-heading">
                 <div>
-                  <p className="section-label">DAILY</p>
+                  <span className="dashboard-eyebrow">
+                    SCHEDULE
+                  </span>
 
                   <h2>Today's plan</h2>
                 </div>
 
-                <a href="/daily">View all</a>
-
+                <Link to="/daily">
+                  View daily →
+                </Link>
               </div>
 
 
               {todayPlans.length === 0 ? (
 
                 <div className="dashboard-empty">
+                  <div className="empty-line" />
 
-                  <p>Your day is empty.</p>
+                  <h3>No plans scheduled</h3>
 
-                  <a href="/daily">
-                    Create a plan →
-                  </a>
+                  <p>
+                    Add activities to organize your day.
+                  </p>
 
+                  <Link to="/daily">
+                    Create a plan
+                  </Link>
                 </div>
 
               ) : (
 
-                <div className="dashboard-plan-list">
+                <div className="schedule-list">
 
-                  {todayPlans.slice(0, 5).map((plan) => (
+                  {todayPlans.slice(0, 6).map((plan) => (
 
                     <div
-                      className="dashboard-plan"
+                      className={`schedule-item ${
+                        plan.completed ? "is-complete" : ""
+                      }`}
                       key={plan.id}
                     >
 
-                      <span className="dashboard-plan-time">
+                      <span className="schedule-time">
                         {plan.time}
                       </span>
 
-                      <span
-                        className={
-                          plan.completed
-                            ? "task-completed"
-                            : ""
-                        }
-                      >
-                        {plan.title}
-                      </span>
+                      <span className="schedule-line" />
 
-                      {plan.completed && (
-                        <span className="dashboard-plan-check">
-                          ✓
+                      <div className="schedule-content">
+
+                        <span className="schedule-title">
+                          {plan.title}
                         </span>
-                      )}
+
+                        {plan.completed && (
+                          <span className="schedule-status">
+                            Completed
+                          </span>
+                        )}
+
+                      </div>
 
                     </div>
 
@@ -320,106 +273,189 @@ function Dashboard() {
 
               )}
 
-            </div>
+            </section>
+
+
+            {/* TASKS */}
+
+            <section className="dashboard-section tasks-section">
+
+              <div className="dashboard-section-heading">
+
+                <div>
+                  <span className="dashboard-eyebrow">
+                    TASKS
+                  </span>
+
+                  <h2>Recent tasks</h2>
+                </div>
+
+                <Link to="/tasks">
+                  View all →
+                </Link>
+
+              </div>
+
+
+              {tasks.length === 0 ? (
+
+                <div className="dashboard-empty">
+                  <div className="empty-line" />
+
+                  <h3>Your task list is empty</h3>
+
+                  <p>
+                    Add something you want to accomplish.
+                  </p>
+
+                  <Link to="/tasks">
+                    Create a task
+                  </Link>
+                </div>
+
+              ) : (
+
+                <div className="task-preview-list">
+
+                  {tasks.slice(0, 6).map((task) => (
+
+                    <div
+                      className="task-preview"
+                      key={task.id}
+                    >
+
+                      <span
+                        className={`task-dot ${
+                          task.completed ? "completed" : ""
+                        }`}
+                      >
+                        {task.completed ? "✓" : ""}
+                      </span>
+
+                      <span
+                        className={
+                          task.completed
+                            ? "task-preview-title completed"
+                            : "task-preview-title"
+                        }
+                      >
+                        {task.title}
+                      </span>
+
+                      <span className="task-preview-state">
+                        {task.completed
+                          ? "Done"
+                          : "Pending"}
+                      </span>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              )}
+
+            </section>
 
 
             {/* FOCUS */}
 
-            <div className="dashboard-panel focus-panel">
+            <section className="dashboard-section focus-section">
 
-              <div className="dashboard-panel-header">
+              <div className="dashboard-section-heading">
 
                 <div>
-                  <p className="section-label">FOCUS</p>
+                  <span className="dashboard-eyebrow">
+                    FOCUS
+                  </span>
 
-                  <h2>Focus Timer</h2>
+                  <h2>Deep work</h2>
                 </div>
 
               </div>
 
-              <FocusTimer />
+              <div className="focus-timer-wrapper">
+                <FocusTimer />
+              </div>
 
-            </div>
+            </section>
 
 
-            {/* PRODUCTIVITY */}
+            {/* PROGRESS */}
 
-            <div className="dashboard-panel">
+            <section className="dashboard-section progress-section">
 
-              <div className="dashboard-panel-header">
+              <div className="dashboard-section-heading">
 
                 <div>
-                  <p className="section-label">
-                    PRODUCTIVITY
-                  </p>
+                  <span className="dashboard-eyebrow">
+                    PROGRESS
+                  </span>
 
-                  <h2>Today's progress</h2>
+                  <h2>Today's performance</h2>
                 </div>
+
+                <Link to="/calendar">
+                  History →
+                </Link>
 
               </div>
 
 
-              <div className="productivity-progress">
+              <div className="metric-row">
 
-                <div className="progress-heading">
-
-                  <span>Tasks completed</span>
-
+                <div className="metric-label">
+                  <span>Tasks</span>
                   <strong>{taskProgress}%</strong>
-
                 </div>
 
-                <div className="dashboard-progress-bar">
-
-                  <div
-                    className="dashboard-progress-fill"
+                <div className="metric-bar">
+                  <span
                     style={{
                       width: `${taskProgress}%`,
                     }}
                   />
-
                 </div>
 
               </div>
 
 
-              <div className="productivity-progress">
+              <div className="metric-row">
 
-                <div className="progress-heading">
-
-                  <span>Plans completed</span>
-
+                <div className="metric-label">
+                  <span>Daily plans</span>
                   <strong>{planProgress}%</strong>
-
                 </div>
 
-                <div className="dashboard-progress-bar">
-
-                  <div
-                    className="dashboard-progress-fill"
+                <div className="metric-bar">
+                  <span
                     style={{
                       width: `${planProgress}%`,
                     }}
                   />
-
                 </div>
 
               </div>
 
 
-              <div className="dashboard-motivation">
+              <div className="progress-message">
 
-                {taskProgress === 100 && tasks.length > 0
-                  ? "Excellent work. You completed all your tasks!"
-                  : taskProgress >= 70
-                  ? "You're making great progress. Keep going!"
-                  : taskProgress >= 40
-                  ? "Good start. Stay focused and keep moving."
-                  : "Start small. Complete one task and build momentum."}
+                <span className="message-mark">✦</span>
+
+                <p>
+                  {taskProgress === 100 && tasks.length > 0
+                    ? "Everything on your task list is complete."
+                    : taskProgress >= 70
+                    ? "You're making solid progress today."
+                    : taskProgress >= 40
+                    ? "You're building momentum. Keep going."
+                    : "Start with one task and build momentum."}
+                </p>
 
               </div>
 
-            </div>
+            </section>
 
           </div>
 
