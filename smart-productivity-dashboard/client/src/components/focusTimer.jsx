@@ -116,8 +116,10 @@ function FocusTimer({ seconds, setSeconds, onSessionSaved }) {
     await saveTimer(0, false);
   };
 
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
+  const safeSeconds = Number(seconds) || 0;
+
+const minutes = Math.floor(safeSeconds / 60);
+const remainingSeconds = safeSeconds % 60;
 
   if (loading) {
     return (
