@@ -1,20 +1,26 @@
 const Plan = require("../models/Plan");
 
+const formatPlan = (plan) => ({
+  id: plan._id.toString(),
+  time: plan.time,
+  title: plan.title,
+  completed: plan.completed,
+  createdAt: plan.createdAt,
+});
+
 const getPlans = async (req, res) => {
   try {
-    const plans = await Plan.find({ user: req.userId }).sort({ createdAt: 1 });
+    const plans = await Plan.find({
+      user: req.userId,
+    }).sort({ createdAt: 1 });
 
-    res.json(
-      plans.map((plan) => ({
-        id: plan._id.toString(),
-        time: plan.time,
-        title: plan.title,
-        completed: plan.completed,
-      }))
-    );
+    res.json(plans.map(formatPlan));
   } catch (error) {
     console.error("Error fetching plans:", error);
-    res.status(500).json({ message: "Failed to fetch plans" });
+
+    res.status(500).json({
+      message: "Failed to fetch plans",
+    });
   }
 };
 
@@ -37,16 +43,14 @@ const createPlan = async (req, res) => {
 
     res.status(201).json({
       message: "Plan created successfully",
-      plan: {
-        id: plan._id.toString(),
-        time: plan.time,
-        title: plan.title,
-        completed: plan.completed,
-      },
+      plan: formatPlan(plan),
     });
   } catch (error) {
     console.error("Error creating plan:", error);
-    res.status(500).json({ message: "Failed to create plan" });
+
+    res.status(500).json({
+      message: "Failed to create plan",
+    });
   }
 };
 
@@ -58,7 +62,9 @@ const updatePlan = async (req, res) => {
     });
 
     if (!plan) {
-      return res.status(404).json({ message: "Plan not found" });
+      return res.status(404).json({
+        message: "Plan not found",
+      });
     }
 
     if (req.body.time !== undefined) {
@@ -77,16 +83,14 @@ const updatePlan = async (req, res) => {
 
     res.json({
       message: "Plan updated successfully",
-      plan: {
-        id: plan._id.toString(),
-        time: plan.time,
-        title: plan.title,
-        completed: plan.completed,
-      },
+      plan: formatPlan(plan),
     });
   } catch (error) {
     console.error("Error updating plan:", error);
-    res.status(500).json({ message: "Failed to update plan" });
+
+    res.status(500).json({
+      message: "Failed to update plan",
+    });
   }
 };
 
@@ -98,13 +102,20 @@ const deletePlan = async (req, res) => {
     });
 
     if (!plan) {
-      return res.status(404).json({ message: "Plan not found" });
+      return res.status(404).json({
+        message: "Plan not found",
+      });
     }
 
-    res.json({ message: "Plan deleted successfully" });
+    res.json({
+      message: "Plan deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting plan:", error);
-    res.status(500).json({ message: "Failed to delete plan" });
+
+    res.status(500).json({
+      message: "Failed to delete plan",
+    });
   }
 };
 
