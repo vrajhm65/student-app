@@ -1,338 +1,432 @@
+import { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
 import Header from "../components/header";
-import StatsCard from "../components/statscard";
-import TaskCard from "../components/taskcard";
-import DailyPlanner from "../components/dailyplanner";
-import DailyPanel from "../components/dailypanel";
-import FocusTimer from "../components/focusTimer";
-
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import FocusTimer from "../components/FocusTimer";
 
 function Dashboard() {
-    const [tasks, setTasks] = useState([]);
-    const [focusSeconds, setFocusSeconds] = useState(0);
-    const [focusSessions, setFocusSessions] = useState([]);
-    const [currentStreak, setCurrentStreak] = useState(0);
+  const [tasks, setTasks] = useState([]);
+  const [plans, setPlans] = useState([]);
+  const [focusSessions, setFocusSessions] = useState([]);
 
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    // Get all tasks
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const response = await fetch(
-                    "http://localhost:5000/api/tasks",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
 
-                const data = await response.json();
+  const loadDashboardData = async () => {
+    try {
+      const [taskResponse, planResponse, focusResponse] =
+        await Promise.all([
+          fetch("http://localhost:5000/api/tasks", { headers }),
+          fetch("http://localhost:5000/api/plans", { headers }),
+          fetch("http://localhost:5000/api/focus", { headers }),
+        ]);
 
-                console.log("Dashboard tasks:", data);
+      const taskData = await taskResponse.json();
+      const planData = await planResponse.json();
+      const focusData = await focusResponse.json();
 
-                if (!response.ok) {
-                    console.error("Dashboard task request failed:", data);
-                    setTasks([]);
-                    return;
-                }
+      if (Array.isArray(taskData)) {
+        setTasks(taskData);
+      }
 
-                if (Array.isArray(data)) {
-                    setTasks(data);
-                } else {
-                    console.error(
-                        "Expected tasks array but received:",
-                        data
-                    );
-                    setTasks([]);
-                }
-            } catch (error) {
-                console.error("Dashboard task error:", error);
-                setTasks([]);
-            }
-        };
+      if (Array.isArray(planData)) {
+        setPlans(planData);
+      }
 
-        fetchTasks();
-    }, [token]);
+      if (Array.isArray(focusData)) {
+        setFocusSessions(focusData);
+      }
+    } catch (error) {
+      console.error("Dashboard data error:", error);
+    }
+  };
 
-    // Calculate current streak
-    useEffect(() => {
-        if (tasks.length === 0) {
-            setCurrentStreak(0);
-            return;
-        }
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
 
-        const completedDates = [
-            ...new Set(
-                tasks
-                    .filter(
-                        (task) =>
-                            task.completed &&
-                            task.completedAt
-                    )
-                    .map((task) => {
-                        const date = new Date(task.completedAt);
+  const completedTasks = tasks.filter((task) => task.completed).length;
+  const pendingTasks = tasks.length - completedTasks;
 
-                        return `${date.getFullYear()}-${String(
-                            date.getMonth() + 1
-                        ).padStart(2, "0")}-${String(
-                            date.getDate()
-                        ).padStart(2, "0")}`;
-                    })
-            ),
-        ].sort((a, b) => new Date(b) - new Date(a));
+  const completedPlans = plans.filter((plan) => plan.completed).length;
 
-        if (completedDates.length === 0) {
-            setCurrentStreak(0);
-            return;
-        }
+  const totalFocusSeconds = focusSessions.reduce(
+    (total, session) => total + (Number(session.duration) || 0),
+    0
+  );
 
-        const today = new Date();
+  const focusMinutes = Math.floor(totalFocusSeconds / 60);
 
-        const todayString = `${today.getFullYear()}-${String(
-            today.getMonth() + 1
-        ).padStart(2, "0")}-${String(
-            today.getDate()
-        ).padStart(2, "0")}`;
+  const taskProgress =
+    tasks.length > 0
+      ? Math.round((completedTasks / tasks.length) * 100)
+      : 0;
 
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
+  const planProgress =
+    plans.length > 0
+      ? Math.round((completedPlans / plans.length) * 100)
+      : 0;
 
-        const yesterdayString = `${yesterday.getFullYear()}-${String(
-            yesterday.getMonth() + 1
-        ).padStart(2, "0")}-${String(
-            yesterday.getDate()
-        ).padStart(2, "0")}`;
+  const today = new Date();
 
-        if (
-            completedDates[0] !== todayString &&
-            completedDates[0] !== yesterdayString
-        ) {
-            setCurrentStreak(0);
-            return;
-        }
+  const dateText = today.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
-        let streak = 1;
+  const todayDate = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(today);
 
-        for (let i = 1; i < completedDates.length; i++) {
-            const previousDate = new Date(
-                completedDates[i - 1]
-            );
+  const formatDate = (date) => {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(date));
+  };
 
-            const currentDate = new Date(
-                completedDates[i]
-            );
-
-            const difference =
-                (previousDate - currentDate) /
-                (1000 * 60 * 60 * 24);
-
-            if (difference === 1) {
-                streak++;
-            } else {
-                break;
-            }
-        }
-
-        setCurrentStreak(streak);
-    }, [tasks]);
-
-    // Get focus sessions
-    useEffect(() => {
-    fetch("http://localhost:5000/api/focus", {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+  const todayPlans = plans
+    .filter((plan) => {
+      if (!plan.createdAt) return true;
+      return formatDate(plan.createdAt) === todayDate;
     })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log("Focus sessions:", data);
+    .sort((a, b) => a.time.localeCompare(b.time));
 
-            if (Array.isArray(data)) {
-                setFocusSessions(data);
-            } else {
-                setFocusSessions([]);
-            }
-        })
-        .catch((error) => {
-            console.error(
-                "Focus session error:",
-                error
-            );
-            setFocusSessions([]);
-        });
-}, [token]);
+  const recentTasks = tasks.slice(0, 5);
 
-    const totalTasks = tasks.length;
+  return (
+    <div className="app-layout">
+      <Sidebar />
 
-    const completedTasks = tasks.filter(
-        (task) => task.completed
-    ).length;
+      <main className="main-content">
+        <Header />
 
-    const pendingTasks =
-        totalTasks - completedTasks;
+        <section className="dashboard-page">
 
-    const totalFocusSeconds =
-        focusSessions.reduce(
-            (total, session) =>
-                total + session.duration,
-            0
-        );
+          {/* HEADER */}
 
-    const totalFocusMinutes =
-        Math.floor(totalFocusSeconds / 60);
+          <div className="dashboard-welcome">
+            <div>
+              <p className="section-label">TODAY'S DASHBOARD</p>
 
-    return (
-        <div className="app-layout">
-            <Sidebar />
+              <h1>Good to see you.</h1>
 
-            <div className="main-area">
-                <Header />
-
-                <main className="dashboard-content">
-
-                    {/* Welcome */}
-
-                    <section className="welcome-section">
-                        <div>
-                            <p className="section-label">
-                                YOUR DAY
-                            </p>
-
-                            <h1>
-                                Let's get things done.
-                            </h1>
-
-                            <p>
-                                Stay focused, manage your
-                                time, and make progress today.
-                            </p>
-                        </div>
-
-                        <Link
-                            to="/tasks"
-                            className="primary-button"
-                        >
-                            + Add Task
-                        </Link>
-                    </section>
-
-
-                    {/* Statistics */}
-
-                    <section className="stats-grid">
-
-                        <StatsCard
-                            title="Tasks Completed"
-                            value={completedTasks}
-                            subtitle="Completed"
-                        />
-
-                        <StatsCard
-                            title="Today's Tasks"
-                            value={totalTasks}
-                            subtitle={`${pendingTasks} remaining`}
-                        />
-
-                        <StatsCard
-                            title="Focus Time"
-                            value={`${totalFocusMinutes}m`}
-                            subtitle="Total sessions"
-                        />
-
-                        <StatsCard
-                            title="Current Streak"
-                            value={`${currentStreak} days`}
-                            subtitle={
-                                currentStreak > 0
-                                    ? "Keep going!"
-                                    : "Start your streak!"
-                            }
-                        />
-
-                    </section>
-
-
-                    {/* Daily Focus */}
-
-                    <DailyPanel tasks={tasks} />
-
-
-                    {/* Focus Timer */}
-
-                    <FocusTimer
-                        seconds={focusSeconds}
-                        setSeconds={setFocusSeconds}
-                        onSessionSaved={(session) => {
-                            setFocusSessions(
-                                (previousSessions) => [
-                                    session,
-                                    ...previousSessions,
-                                ]
-                            );
-                        }}
-                    />
-
-
-                    {/* Main Dashboard Grid */}
-
-                    <section className="dashboard-grid">
-
-                        {/* Tasks */}
-
-                        <div className="tasks-section">
-
-                            <div className="section-heading">
-
-                                <div>
-                                    <p className="section-label">
-                                        TASKS
-                                    </p>
-
-                                    <h3>
-                                        Today's Tasks
-                                    </h3>
-                                </div>
-
-                                <Link
-                                    to="/tasks"
-                                    className="view-button"
-                                >
-                                    View all
-                                </Link>
-
-                            </div>
-
-
-                            {tasks
-                                .slice(0, 3)
-                                .map((task) => (
-                                    <TaskCard
-                                        key={task.id}
-                                        title={task.title}
-                                        time="Today"
-                                        completed={
-                                            task.completed
-                                        }
-                                    />
-                                ))}
-
-                        </div>
-
-
-                        {/* Daily Planner */}
-
-                        <DailyPlanner />
-
-                    </section>
-
-                </main>
+              <p className="dashboard-date">{dateText}</p>
             </div>
-        </div>
-    );
+          </div>
+
+
+          {/* STATS */}
+
+          <div className="dashboard-stats">
+
+            <div className="dashboard-stat-card">
+              <span>Tasks</span>
+
+              <strong>
+                {completedTasks} / {tasks.length}
+              </strong>
+
+              <small>
+                {pendingTasks} pending
+              </small>
+            </div>
+
+
+            <div className="dashboard-stat-card">
+              <span>Daily Plans</span>
+
+              <strong>
+                {completedPlans} / {plans.length}
+              </strong>
+
+              <small>
+                {planProgress}% completed
+              </small>
+            </div>
+
+
+            <div className="dashboard-stat-card">
+              <span>Focus Time</span>
+
+              <strong>
+                {focusMinutes}
+                <small> min</small>
+              </strong>
+
+              <small>
+                Total focus sessions
+              </small>
+            </div>
+
+
+            <div className="dashboard-stat-card">
+              <span>Productivity</span>
+
+              <strong>{taskProgress}%</strong>
+
+              <small>
+                Task completion
+              </small>
+            </div>
+
+          </div>
+
+
+          {/* MAIN GRID */}
+
+          <div className="dashboard-grid">
+
+            {/* TASKS */}
+
+            <div className="dashboard-panel">
+
+              <div className="dashboard-panel-header">
+
+                <div>
+                  <p className="section-label">TASKS</p>
+
+                  <h2>Your tasks</h2>
+                </div>
+
+                <a href="/tasks">View all</a>
+
+              </div>
+
+
+              {recentTasks.length === 0 ? (
+
+                <div className="dashboard-empty">
+                  <p>No tasks yet.</p>
+
+                  <a href="/tasks">
+                    Add your first task →
+                  </a>
+                </div>
+
+              ) : (
+
+                <div className="dashboard-task-list">
+
+                  {recentTasks.map((task) => (
+
+                    <div
+                      className="dashboard-task"
+                      key={task.id}
+                    >
+
+                      <div
+                        className={`dashboard-task-check ${
+                          task.completed ? "completed" : ""
+                        }`}
+                      >
+                        {task.completed ? "✓" : ""}
+                      </div>
+
+                      <span
+                        className={
+                          task.completed
+                            ? "task-completed"
+                            : ""
+                        }
+                      >
+                        {task.title}
+                      </span>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              )}
+
+            </div>
+
+
+            {/* TODAY PLAN */}
+
+            <div className="dashboard-panel">
+
+              <div className="dashboard-panel-header">
+
+                <div>
+                  <p className="section-label">DAILY</p>
+
+                  <h2>Today's plan</h2>
+                </div>
+
+                <a href="/daily">View all</a>
+
+              </div>
+
+
+              {todayPlans.length === 0 ? (
+
+                <div className="dashboard-empty">
+
+                  <p>Your day is empty.</p>
+
+                  <a href="/daily">
+                    Create a plan →
+                  </a>
+
+                </div>
+
+              ) : (
+
+                <div className="dashboard-plan-list">
+
+                  {todayPlans.slice(0, 5).map((plan) => (
+
+                    <div
+                      className="dashboard-plan"
+                      key={plan.id}
+                    >
+
+                      <span className="dashboard-plan-time">
+                        {plan.time}
+                      </span>
+
+                      <span
+                        className={
+                          plan.completed
+                            ? "task-completed"
+                            : ""
+                        }
+                      >
+                        {plan.title}
+                      </span>
+
+                      {plan.completed && (
+                        <span className="dashboard-plan-check">
+                          ✓
+                        </span>
+                      )}
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              )}
+
+            </div>
+
+
+            {/* FOCUS */}
+
+            <div className="dashboard-panel focus-panel">
+
+              <div className="dashboard-panel-header">
+
+                <div>
+                  <p className="section-label">FOCUS</p>
+
+                  <h2>Focus Timer</h2>
+                </div>
+
+              </div>
+
+              <FocusTimer />
+
+            </div>
+
+
+            {/* PRODUCTIVITY */}
+
+            <div className="dashboard-panel">
+
+              <div className="dashboard-panel-header">
+
+                <div>
+                  <p className="section-label">
+                    PRODUCTIVITY
+                  </p>
+
+                  <h2>Today's progress</h2>
+                </div>
+
+              </div>
+
+
+              <div className="productivity-progress">
+
+                <div className="progress-heading">
+
+                  <span>Tasks completed</span>
+
+                  <strong>{taskProgress}%</strong>
+
+                </div>
+
+                <div className="dashboard-progress-bar">
+
+                  <div
+                    className="dashboard-progress-fill"
+                    style={{
+                      width: `${taskProgress}%`,
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+
+              <div className="productivity-progress">
+
+                <div className="progress-heading">
+
+                  <span>Plans completed</span>
+
+                  <strong>{planProgress}%</strong>
+
+                </div>
+
+                <div className="dashboard-progress-bar">
+
+                  <div
+                    className="dashboard-progress-fill"
+                    style={{
+                      width: `${planProgress}%`,
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+
+              <div className="dashboard-motivation">
+
+                {taskProgress === 100 && tasks.length > 0
+                  ? "Excellent work. You completed all your tasks!"
+                  : taskProgress >= 70
+                  ? "You're making great progress. Keep going!"
+                  : taskProgress >= 40
+                  ? "Good start. Stay focused and keep moving."
+                  : "Start small. Complete one task and build momentum."}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+      </main>
+    </div>
+  );
 }
 
 export default Dashboard;
