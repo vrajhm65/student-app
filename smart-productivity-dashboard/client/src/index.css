@@ -1688,3 +1688,179 @@ p {
   }
 
 }
+
+/* =========================================================
+   SMARTFLOW — DASHBOARD POLISH
+   ========================================================= */
+
+.overview-card,
+.dashboard-section,
+.daily-progress-card,
+.daily-plan,
+.calendar-card,
+.selected-day-panel,
+.settings-card {
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.overview-card:hover {
+  border-color: #30353d;
+  background: #171a1f;
+  transform: translateY(-2px);
+}
+
+.dashboard-section:hover {
+  border-color: #2c3139;
+}
+
+/* Better dashboard action */
+
+.dashboard-action {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.dashboard-action:hover {
+  transform: translateY(-1px);
+}
+
+/* Better overview values */
+
+.overview-value {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Better task interaction */
+
+.task-preview {
+  transition:
+    background 0.2s ease,
+    padding-left 0.2s ease,
+    padding-right 0.2s ease;
+}
+
+.task-preview:hover {
+  background: #171a1f;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.task-dot {
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.task-preview:hover .task-dot {
+  border-color: #858b95;
+  transform: scale(1.05);
+}
+
+/* Better schedule */
+
+.schedule-item {
+  transition: background 0.2s ease;
+}
+
+.schedule-item:hover {
+  background: #171a1f;
+}
+
+.schedule-line {
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.schedule-item:hover .schedule-line {
+  transform: scale(1.4);
+}
+
+/* Better progress bar */
+
+.metric-bar,
+.progress-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-bar span,
+.progress-fill {
+  box-shadow: 0 0 10px rgba(174, 179, 188, 0.12);
+}
+
+/* Better planner interaction */
+
+.daily-plan:hover {
+  border-color: #30353d;
+  background: #171a1f;
+}
+
+.plan-check {
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.plan-check:hover {
+  transform: scale(1.08);
+}
+
+/* Better buttons */
+
+button {
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Cleaner input interaction */
+
+input,
+textarea,
+select {
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 2px rgba(180, 185, 194, 0.06);
+}
+
+/* Smooth page feel */
+
+.dashboard-page,
+.daily-page,
+.calendar-page,
+.settings-page {
+  animation: pageFadeIn 0.35s ease both;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
