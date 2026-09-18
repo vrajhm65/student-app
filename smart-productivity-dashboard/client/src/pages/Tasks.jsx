@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/sidebar";
 import Header from "../components/header";
 
@@ -12,66 +12,49 @@ function Tasks() {
 
   const token = localStorage.getItem("token");
 
+  // GET TASKS
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch("http://localhost:5000/api/tasks", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          console.error("Tasks request failed:", data);
-          setTasks([]);
-          return;
-        }
-
+    fetch("http://localhost:5000/api/tasks", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
         setTasks(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-        setTasks([]);
-      } finally {
         setLoading(false);
-      }
-    };
-
-    fetchTasks();
+      })
+      .catch((error) => {
+        console.error("Error fetching tasks:", error);
+        setLoading(false);
+      });
   }, [token]);
 
-  const completedCount = useMemo(
-    () => tasks.filter((task) => task.completed).length,
-    [tasks]
-  );
-
-  const pendingCount = tasks.length - completedCount;
-
-  const progress =
-    tasks.length > 0 ? Math.round((completedCount / tasks.length) * 100) : 0;
-
+  // ADD TASK
   const addTask = async (event) => {
     event.preventDefault();
 
     const title = newTaskTitle.trim();
-    if (!title) return;
+
+    if (!title || saving) return;
+
+    setSaving(true);
 
     try {
-      setSaving(true);
-
-      const response = await fetch("http://localhost:5000/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title,
-          completed: false,
-        }),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/tasks",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title,
+            completed: false,
+          }),
+        }
+      );
 
       const result = await response.json();
 
@@ -80,7 +63,11 @@ function Tasks() {
         return;
       }
 
-      setTasks((previousTasks) => [...previousTasks, result.task]);
+      setTasks((previousTasks) => [
+        ...previousTasks,
+        result.task,
+      ]);
+
       setNewTaskTitle("");
     } catch (error) {
       console.error("Error adding task:", error);
@@ -89,6 +76,7 @@ function Tasks() {
     }
   };
 
+  // COMPLETE / UNCOMPLETE
   const toggleTask = async (task) => {
     try {
       const response = await fetch(
@@ -108,13 +96,15 @@ function Tasks() {
       const result = await response.json();
 
       if (!response.ok) {
-        console.error("Task update failed:", result);
+        console.error("Update failed:", result);
         return;
       }
 
       setTasks((previousTasks) =>
         previousTasks.map((currentTask) =>
-          currentTask.id === task.id ? result.task : currentTask
+          currentTask.id === task.id
+            ? result.task
+            : currentTask
         )
       );
     } catch (error) {
@@ -122,23 +112,25 @@ function Tasks() {
     }
   };
 
+  // START EDIT
   const startEditing = (task) => {
     setEditingTaskId(task.id);
-    setEditingTitle(task.title || "");
+    setEditingTitle(task.title);
   };
 
+  // CANCEL EDIT
   const cancelEditing = () => {
     setEditingTaskId(null);
     setEditingTitle("");
   };
 
+  // SAVE EDIT
   const saveEdit = async (task) => {
     const title = editingTitle.trim();
+
     if (!title) return;
 
     try {
-      setSaving(true);
-
       const response = await fetch(
         `http://localhost:5000/api/tasks/${task.id}`,
         {
@@ -162,28 +154,29 @@ function Tasks() {
 
       setTasks((previousTasks) =>
         previousTasks.map((currentTask) =>
-          currentTask.id === task.id ? result.task : currentTask
+          currentTask.id === task.id
+            ? result.task
+            : currentTask
         )
       );
 
       cancelEditing();
     } catch (error) {
       console.error("Error editing task:", error);
-    } finally {
-      setSaving(false);
     }
   };
 
-  const deleteTask = async (task) => {
+  // DELETE
+  const deleteTask = async (taskId) => {
     const confirmed = window.confirm(
-      `Delete “${task.title}”? This action cannot be undone.`
+      "Delete this task?"
     );
 
     if (!confirmed) return;
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/tasks/${task.id}`,
+        `http://localhost:5000/api/tasks/${taskId}`,
         {
           method: "DELETE",
           headers: {
@@ -200,16 +193,28 @@ function Tasks() {
       }
 
       setTasks((previousTasks) =>
-        previousTasks.filter((currentTask) => currentTask.id !== task.id)
+        previousTasks.filter(
+          (task) => task.id !== taskId
+        )
       );
-
-      if (editingTaskId === task.id) {
-        cancelEditing();
-      }
     } catch (error) {
       console.error("Error deleting task:", error);
     }
   };
+
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(
+    (task) => task.completed
+  ).length;
+
+  const pendingTasks = totalTasks - completedTasks;
+
+  const progress =
+    totalTasks === 0
+      ? 0
+      : Math.round(
+          (completedTasks / totalTasks) * 100
+        );
 
   return (
     <div className="app-layout">
@@ -218,190 +223,270 @@ function Tasks() {
       <main className="main-content">
         <Header />
 
-        <section className="tasks-page tasks-page-redesign">
-          <div className="tasks-page-header">
+        <section className="tasks-page">
+
+          {/* PAGE HEADER */}
+          <div className="page-heading">
             <div>
-              <span className="dashboard-eyebrow">YOUR WORK</span>
+              <p className="section-label">
+                YOUR WORK
+              </p>
+
               <h1>Tasks</h1>
-              <p>Capture what needs to get done and keep your day moving.</p>
-            </div>
-          </div>
-
-          <section className="tasks-overview">
-            <div className="tasks-overview-card tasks-overview-main">
-              <div className="tasks-overview-top">
-                <div>
-                  <span className="tasks-overview-label">TODAY'S PROGRESS</span>
-                  <h2>{progress}% complete</h2>
-                </div>
-                <div className="tasks-progress-ring" aria-label={`${progress}% complete`}>
-                  <span>{progress}%</span>
-                </div>
-              </div>
-
-              <div className="tasks-progress-track">
-                <span style={{ width: `${progress}%` }} />
-              </div>
 
               <p>
-                {tasks.length === 0
-                  ? "Add your first task to start your day."
-                  : progress === 100
-                  ? "Everything is complete. Nice work."
-                  : `${pendingCount} ${pendingCount === 1 ? "task" : "tasks"} still to go.`}
+                Organize everything you need to accomplish.
               </p>
             </div>
 
-            <div className="tasks-overview-card tasks-count-card">
-              <span className="tasks-overview-label">TOTAL</span>
-              <strong>{tasks.length}</strong>
-              <span>Tasks</span>
+            <div className="tasks-progress-summary">
+              <strong>{progress}%</strong>
+              <span>completed</span>
+            </div>
+          </div>
+
+          {/* OVERVIEW */}
+          <div className="task-overview">
+
+            <div className="task-overview-card">
+              <span>Total Tasks</span>
+              <strong>{totalTasks}</strong>
             </div>
 
-            <div className="tasks-overview-card tasks-count-card">
-              <span className="tasks-overview-label">DONE</span>
-              <strong>{completedCount}</strong>
+            <div className="task-overview-card">
               <span>Completed</span>
+              <strong>{completedTasks}</strong>
             </div>
 
-            <div className="tasks-overview-card tasks-count-card">
-              <span className="tasks-overview-label">NEXT</span>
-              <strong>{pendingCount}</strong>
+            <div className="task-overview-card">
               <span>Remaining</span>
-            </div>
-          </section>
-
-          <section className="task-composer-card">
-            <div className="task-composer-copy">
-              <span className="tasks-overview-label">QUICK ADD</span>
-              <h2>What needs to be done?</h2>
+              <strong>{pendingTasks}</strong>
             </div>
 
-            <form className="task-composer-form" onSubmit={addTask}>
-              <input
-                type="text"
-                value={newTaskTitle}
-                onChange={(event) => setNewTaskTitle(event.target.value)}
-                placeholder="e.g. Finish MERN dashboard UI"
-                aria-label="New task title"
-                maxLength={200}
-              />
-              <button type="submit" disabled={saving || !newTaskTitle.trim()}>
-                {saving ? "Adding..." : "+ Add task"}
-              </button>
-            </form>
-          </section>
+          </div>
 
-          <section className="tasks-list-section">
-            <div className="tasks-list-heading">
+          {/* ADD TASK */}
+          <form
+            className="task-form"
+            onSubmit={addTask}
+          >
+            <input
+              className="task-input"
+              type="text"
+              value={newTaskTitle}
+              onChange={(event) =>
+                setNewTaskTitle(event.target.value)
+              }
+              placeholder="What needs to be done?"
+            />
+
+            <button
+              type="submit"
+              className="task-add-button"
+              disabled={saving}
+            >
+              {saving ? "Adding..." : "Add Task"}
+            </button>
+          </form>
+
+          {/* PROGRESS */}
+          <div className="tasks-progress-card">
+
+            <div className="tasks-progress-top">
               <div>
-                <span className="tasks-overview-label">TASK LIST</span>
-                <h2>All tasks</h2>
+                <span>Today's Progress</span>
+                <strong>
+                  {completedTasks} of {totalTasks} tasks
+                </strong>
               </div>
-              <span className="tasks-list-count">
-                {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+
+              <strong>{progress}%</strong>
+            </div>
+
+            <div className="tasks-progress-bar">
+              <span
+                style={{
+                  width: `${progress}%`,
+                }}
+              />
+            </div>
+
+          </div>
+
+          {/* TASK LIST */}
+          <div className="tasks-list">
+
+            <div className="tasks-list-header">
+              <div>
+                <span className="section-label">
+                  TASK LIST
+                </span>
+
+                <h2>Your tasks</h2>
+              </div>
+
+              <span className="task-count">
+                {totalTasks}{" "}
+                {totalTasks === 1 ? "task" : "tasks"}
               </span>
             </div>
 
             {loading ? (
-              <div className="tasks-empty-state">
-                <div className="tasks-empty-icon">…</div>
-                <h3>Loading your tasks</h3>
-                <p>Getting everything ready.</p>
+              <div className="task-empty">
+                <div className="empty-line" />
+                <h3>Loading tasks</h3>
+                <p>
+                  Getting your tasks ready...
+                </p>
               </div>
             ) : tasks.length === 0 ? (
-              <div className="tasks-empty-state">
-                <div className="tasks-empty-icon">✓</div>
-                <h3>Your task list is clear</h3>
-                <p>Add a task above and turn your plan into progress.</p>
+              <div className="task-empty">
+                <div className="empty-line" />
+                <h3>No tasks yet</h3>
+                <p>
+                  Add your first task above and start
+                  making progress.
+                </p>
               </div>
             ) : (
-              <div className="tasks-redesign-list">
-                {tasks.map((task, index) => {
-                  const isEditing = editingTaskId === task.id;
+              tasks.map((task, index) => (
+                <div
+                  className={`task-card ${
+                    task.completed
+                      ? "is-complete"
+                      : ""
+                  }`}
+                  key={task.id}
+                >
 
-                  return (
-                    <article
-                      className={`task-row-card ${task.completed ? "is-complete" : ""}`}
-                      key={task.id}
-                    >
-                      <div className="task-row-number">{String(index + 1).padStart(2, "0")}</div>
+                  {/* NUMBER */}
+                  <div className="task-number">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
 
+                  {/* CHECK */}
+                  <button
+                    type="button"
+                    className={`task-check ${
+                      task.completed
+                        ? "completed"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      toggleTask(task)
+                    }
+                    aria-label={
+                      task.completed
+                        ? "Mark task incomplete"
+                        : "Mark task complete"
+                    }
+                  >
+                    {task.completed ? "✓" : ""}
+                  </button>
+
+                  {/* CONTENT */}
+                  <div className="task-card-content">
+
+                    {editingTaskId === task.id ? (
+                      <input
+                        className="task-edit-input"
+                        type="text"
+                        value={editingTitle}
+                        onChange={(event) =>
+                          setEditingTitle(
+                            event.target.value
+                          )
+                        }
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === "Enter"
+                          ) {
+                            saveEdit(task);
+                          }
+
+                          if (
+                            event.key === "Escape"
+                          ) {
+                            cancelEditing();
+                          }
+                        }}
+                        autoFocus
+                      />
+                    ) : (
+                      <>
+                        <div
+                          className={`task-card-title ${
+                            task.completed
+                              ? "completed"
+                              : ""
+                          }`}
+                        >
+                          {task.title}
+                        </div>
+
+                        <span className="task-card-status">
+                          {task.completed
+                            ? "Completed"
+                            : "Pending"}
+                        </span>
+                      </>
+                    )}
+
+                  </div>
+
+                  {/* ACTIONS */}
+                  <div className="task-card-actions">
+
+                    {editingTaskId === task.id ? (
+                      <>
+                        <button
+                          type="button"
+                          className="task-action primary"
+                          onClick={() =>
+                            saveEdit(task)
+                          }
+                        >
+                          Save
+                        </button>
+
+                        <button
+                          type="button"
+                          className="task-action"
+                          onClick={cancelEditing}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
                       <button
                         type="button"
-                        className={`task-row-check ${task.completed ? "checked" : ""}`}
-                        onClick={() => toggleTask(task)}
-                        aria-label={task.completed ? `Mark ${task.title} incomplete` : `Complete ${task.title}`}
+                        className="task-action"
+                        onClick={() =>
+                          startEditing(task)
+                        }
                       >
-                        {task.completed ? "✓" : ""}
+                        Edit
                       </button>
+                    )}
 
-                      <div className="task-row-content">
-                        {isEditing ? (
-                          <input
-                            className="task-edit-input"
-                            type="text"
-                            value={editingTitle}
-                            onChange={(event) => setEditingTitle(event.target.value)}
-                            onKeyDown={(event) => {
-                              if (event.key === "Enter") saveEdit(task);
-                              if (event.key === "Escape") cancelEditing();
-                            }}
-                            autoFocus
-                            maxLength={200}
-                            aria-label="Edit task title"
-                          />
-                        ) : (
-                          <h3>{task.title}</h3>
-                        )}
-                        <span>{task.completed ? "Completed" : "In progress"}</span>
-                      </div>
+                    <button
+                      type="button"
+                      className="task-action danger"
+                      onClick={() =>
+                        deleteTask(task.id)
+                      }
+                    >
+                      Delete
+                    </button>
 
-                      <div className="task-row-actions">
-                        {isEditing ? (
-                          <>
-                            <button
-                              type="button"
-                              className="task-action-button primary"
-                              onClick={() => saveEdit(task)}
-                              disabled={saving || !editingTitle.trim()}
-                            >
-                              Save
-                            </button>
-                            <button
-                              type="button"
-                              className="task-action-button"
-                              onClick={cancelEditing}
-                              disabled={saving}
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              type="button"
-                              className="task-action-button"
-                              onClick={() => startEditing(task)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              type="button"
-                              className="task-action-button delete"
-                              onClick={() => deleteTask(task)}
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
+                  </div>
+
+                </div>
+              ))
             )}
-          </section>
+
+          </div>
+
         </section>
       </main>
     </div>
