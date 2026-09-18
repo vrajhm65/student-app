@@ -67,7 +67,7 @@ function Sidebar() {
           className="logout-button"
           onClick={handleLogout}
         >
-          <span>↪</span>
+          
           Logout
         </button>
 
