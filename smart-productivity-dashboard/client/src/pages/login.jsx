@@ -32,6 +32,14 @@ function Login() {
 
       localStorage.setItem("token", data.token);
 
+localStorage.setItem(
+  "smartflow_user",
+  JSON.stringify({
+    name: data.user?.name || data.name || "",
+    email: data.user?.email || data.email || email,
+  })
+);
+
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
