@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./header.css";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -9,30 +10,48 @@ function getGreeting() {
   return "Good evening";
 }
 
+function getFormattedDate() {
+  return new Intl.DateTimeFormat("en-IN", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+  }).format(new Date());
+}
+
 function getUserData() {
   try {
     const savedUser = localStorage.getItem("smartflow_user");
 
     if (savedUser) {
-      return JSON.parse(savedUser);
+      const user = JSON.parse(savedUser);
+
+      return {
+        name: user.name || "",
+        email: user.email || "",
+      };
     }
   } catch (error) {
-    console.error("Unable to read user data:", error);
+    console.error("User data error:", error);
   }
 
-  const token = localStorage.getItem("token");
+  // Fallback: try reading user information from JWT
+  try {
+    const token = localStorage.getItem("token");
 
-  if (token) {
-    try {
+    if (token) {
       const payload = JSON.parse(atob(token.split(".")[1]));
 
       return {
-        name: payload.name || payload.username || "",
+        name:
+          payload.name ||
+          payload.username ||
+          payload.userName ||
+          "",
         email: payload.email || "",
       };
-    } catch {
-      // Token may not contain readable user information.
     }
+  } catch (error) {
+    console.error("Token decode error:", error);
   }
 
   return {
@@ -41,71 +60,54 @@ function getUserData() {
   };
 }
 
-function getInitials(name) {
-  if (!name) return "U";
+function getInitials(name, email) {
+  const source = name?.trim() || email?.split("@")[0] || "U";
 
-  const parts = name.trim().split(/\s+/);
+  const words = source
+    .split(" ")
+    .filter(Boolean);
 
-  if (parts.length === 1) {
-    return parts[0].slice(0, 2).toUpperCase();
+  if (words.length >= 2) {
+    return `${words[0][0]}${words[1][0]}`.toUpperCase();
   }
 
-  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-}
-
-function formatDate() {
-  return new Intl.DateTimeFormat("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  }).format(new Date());
+  return source.slice(0, 2).toUpperCase();
 }
 
 function Header() {
   const navigate = useNavigate();
 
-  const [greeting, setGreeting] = useState(getGreeting());
-  const [user, setUser] = useState(getUserData());
-
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
 
   const [tasks, setTasks] = useState([]);
   const [plans, setPlans] = useState([]);
 
   const headerRef = useRef(null);
 
-  const token = localStorage.getItem("token");
+  const user = getUserData();
+
+  const displayName = user.name || "User";
+  const initials = getInitials(user.name, user.email);
+
+  /* -----------------------------------------
+     FETCH CURRENT PRODUCTIVITY DATA
+  ----------------------------------------- */
 
   useEffect(() => {
-    const updateGreeting = () => {
-      setGreeting(getGreeting());
-    };
+    const fetchHeaderData = async () => {
+      const token = localStorage.getItem("token");
 
-    updateGreeting();
-
-    const interval = setInterval(updateGreeting, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const loadHeaderData = async () => {
       if (!token) return;
 
       try {
-        const [tasksResponse, plansResponse] = await Promise.all([
-          fetch("http://localhost:5000/api/tasks", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
 
-          fetch("http://localhost:5000/api/plans", {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
+        const [tasksResponse, plansResponse] = await Promise.all([
+          fetch("http://localhost:5000/api/tasks", { headers }),
+          fetch("http://localhost:5000/api/plans", { headers }),
         ]);
 
         if (tasksResponse.ok) {
@@ -122,20 +124,12 @@ function Header() {
       }
     };
 
-    loadHeaderData();
-  }, [token]);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setUser(getUserData());
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    fetchHeaderData();
   }, []);
+
+  /* -----------------------------------------
+     CLOSE POPUPS WHEN CLICKING OUTSIDE
+  ----------------------------------------- */
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
@@ -143,8 +137,8 @@ function Header() {
         headerRef.current &&
         !headerRef.current.contains(event.target)
       ) {
-        setNotificationsOpen(false);
-        setProfileOpen(false);
+        setNotificationOpen(false);
+        setAccountOpen(false);
       }
     };
 
@@ -155,260 +149,308 @@ function Header() {
     };
   }, []);
 
-  const today = new Date().toISOString().split("T")[0];
+  /* -----------------------------------------
+     COUNTS
+  ----------------------------------------- */
 
-  const todayPlans = useMemo(() => {
-    return plans.filter((plan) => {
-      const planDate =
-        plan.date ||
-        plan.planDate ||
-        plan.createdAt?.split("T")[0];
+  const pendingTasks = tasks.filter(
+    (task) => !task.completed
+  );
 
-      return planDate === today;
-    });
-  }, [plans, today]);
-
-  const pendingTasks = tasks.filter((task) => !task.completed);
-  const completedTasks = tasks.filter((task) => task.completed);
+  const todayPlans = plans.filter((plan) => !plan.completed);
 
   const notificationCount =
     pendingTasks.length + todayPlans.length;
 
-  const displayName = user.name || "there";
-  const initials = getInitials(user.name);
+  /* -----------------------------------------
+     TOGGLE NOTIFICATIONS
+  ----------------------------------------- */
+
+  const handleNotificationClick = () => {
+    setNotificationOpen((previous) => !previous);
+    setAccountOpen(false);
+  };
+
+  /* -----------------------------------------
+     TOGGLE ACCOUNT
+  ----------------------------------------- */
+
+  const handleAccountClick = () => {
+    setAccountOpen((previous) => !previous);
+    setNotificationOpen(false);
+  };
+
+  /* -----------------------------------------
+     LOGOUT
+  ----------------------------------------- */
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("smartflow_user");
 
+    setAccountOpen(false);
+
     navigate("/login");
   };
 
-  const toggleNotifications = () => {
-    setNotificationsOpen((previous) => !previous);
-    setProfileOpen(false);
-  };
-
-  const toggleProfile = () => {
-    setProfileOpen((previous) => !previous);
-    setNotificationsOpen(false);
-  };
-
   return (
-    <header className="header" ref={headerRef}>
-      <div className="header-copy">
-        <p className="header-label">YOUR PRODUCTIVITY</p>
+    <header className="sf-header" ref={headerRef}>
 
-        <h2>
-          {greeting}, {displayName}
+      {/* LEFT SIDE */}
+      <div className="sf-header-left">
+        <p className="sf-header-label">
+          YOUR PRODUCTIVITY
+        </p>
+
+        <h2 className="sf-header-greeting">
+          {getGreeting()}, {displayName} <span>👋</span>
         </h2>
-
-        <div className="header-status">
-          <span className="header-status-dot" />
-          <span>Focus mode ready</span>
-        </div>
       </div>
 
-      <div className="header-actions">
+      {/* RIGHT SIDE */}
+      <div className="sf-header-right">
 
-        {/* DATE */}
-        <div className="header-date">
-          {formatDate()}
+        <div className="sf-header-date">
+          {getFormattedDate()}
         </div>
 
-        {/* NOTIFICATIONS */}
-        <div className="header-action-wrap">
+        {/* NOTIFICATION */}
+        <div className="sf-header-menu">
+
           <button
             type="button"
-            className={`header-action-button header-notification ${
-              notificationsOpen ? "is-active" : ""
+            className={`sf-header-icon-button ${
+              notificationOpen ? "is-active" : ""
             }`}
+            onClick={handleNotificationClick}
             aria-label="Notifications"
-            aria-expanded={notificationsOpen}
-            onClick={toggleNotifications}
+            aria-expanded={notificationOpen}
           >
-            <svg
-              className="header-action-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
-              <path d="M10 21h4" />
-            </svg>
+            <span className="sf-bell-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+                <path d="M10 21h4" />
+              </svg>
+            </span>
 
             {notificationCount > 0 && (
-              <span className="notification-count">
-                {notificationCount > 9 ? "9+" : notificationCount}
+              <span className="sf-notification-badge">
+                {notificationCount > 9
+                  ? "9+"
+                  : notificationCount}
               </span>
             )}
           </button>
 
-          {notificationsOpen && (
-            <div className="header-popover notification-popover">
+          {notificationOpen && (
+            <div className="sf-header-dropdown sf-notification-dropdown">
 
-              <div className="popover-header">
+              <div className="sf-dropdown-header">
                 <div>
-                  <span className="popover-label">SMARTFLOW</span>
+                  <p className="sf-dropdown-eyebrow">
+                    SMARTFLOW
+                  </p>
+
                   <h3>Notifications</h3>
                 </div>
 
-                <span className="popover-count">
-                  {notificationCount}
-                </span>
+                {notificationCount > 0 && (
+                  <span className="sf-dropdown-count">
+                    {notificationCount}
+                  </span>
+                )}
               </div>
 
-              <div className="notification-list">
+              <div className="sf-notification-list">
 
                 {pendingTasks.length > 0 && (
-                  <button
-                    type="button"
-                    className="notification-item"
-                    onClick={() => {
-                      setNotificationsOpen(false);
-                      navigate("/tasks");
-                    }}
-                  >
-                    <span className="notification-icon task-notification">
-                      ✓
-                    </span>
+                  <div className="sf-notification-group">
 
-                    <span>
-                      <strong>
-                        {pendingTasks.length} task
-                        {pendingTasks.length !== 1 ? "s" : ""} pending
-                      </strong>
+                    <p className="sf-notification-group-title">
+                      Tasks
+                    </p>
 
-                      <small>
-                        You still have work waiting to be completed.
-                      </small>
-                    </span>
-                  </button>
+                    {pendingTasks.slice(0, 3).map((task) => (
+                      <button
+                        type="button"
+                        className="sf-notification-item"
+                        key={task._id || task.id}
+                        onClick={() => navigate("/tasks")}
+                      >
+                        <span className="sf-notification-item-icon">
+                          ✓
+                        </span>
+
+                        <span className="sf-notification-item-content">
+                          <strong>{task.title}</strong>
+                          <small>Task still pending</small>
+                        </span>
+                      </button>
+                    ))}
+
+                  </div>
                 )}
 
                 {todayPlans.length > 0 && (
-                  <button
-                    type="button"
-                    className="notification-item"
-                    onClick={() => {
-                      setNotificationsOpen(false);
-                      navigate("/daily");
-                    }}
-                  >
-                    <span className="notification-icon plan-notification">
-                      ◷
-                    </span>
+                  <div className="sf-notification-group">
 
-                    <span>
-                      <strong>
-                        {todayPlans.length} plan
-                        {todayPlans.length !== 1 ? "s" : ""} today
-                      </strong>
+                    <p className="sf-notification-group-title">
+                      Plans
+                    </p>
 
-                      <small>
-                        Your daily schedule has planned activity.
-                      </small>
-                    </span>
-                  </button>
+                    {todayPlans.slice(0, 3).map((plan) => (
+                      <button
+                        type="button"
+                        className="sf-notification-item"
+                        key={plan._id || plan.id}
+                        onClick={() => navigate("/daily")}
+                      >
+                        <span className="sf-notification-item-icon">
+                          ◷
+                        </span>
+
+                        <span className="sf-notification-item-content">
+                          <strong>{plan.title}</strong>
+                          <small>Planned activity</small>
+                        </span>
+                      </button>
+                    ))}
+
+                  </div>
                 )}
 
-                {completedTasks.length > 0 &&
-                  pendingTasks.length === 0 && (
-                    <div className="notification-item notification-success">
-                      <span className="notification-icon success-notification">
-                        ✓
-                      </span>
-
-                      <span>
-                        <strong>All tasks completed</strong>
-                        <small>
-                          Nice work. Your task list is clear.
-                        </small>
-                      </span>
-                    </div>
-                  )}
-
                 {notificationCount === 0 && (
-                  <div className="notification-empty">
-                    <div className="notification-empty-icon">
+                  <div className="sf-notification-empty">
+                    <div className="sf-empty-check">
                       ✓
                     </div>
 
                     <strong>You're all caught up</strong>
 
                     <span>
-                      Nothing needs your attention right now.
+                      No pending tasks or plans right now.
                     </span>
                   </div>
                 )}
 
               </div>
+
+              <button
+                type="button"
+                className="sf-notification-footer"
+                onClick={() => {
+                  setNotificationOpen(false);
+                  navigate("/tasks");
+                }}
+              >
+                View your tasks
+                <span>→</span>
+              </button>
+
             </div>
           )}
         </div>
 
         {/* ACCOUNT */}
-        <div className="header-action-wrap">
+        <div className="sf-header-menu">
+
           <button
             type="button"
-            className={`header-action-button header-profile ${
-              profileOpen ? "is-active" : ""
+            className={`sf-profile-button ${
+              accountOpen ? "is-active" : ""
             }`}
+            onClick={handleAccountClick}
             aria-label="Account"
-            aria-expanded={profileOpen}
-            onClick={toggleProfile}
+            aria-expanded={accountOpen}
           >
-            <span className="header-profile-avatar">
+            <span className="sf-profile-avatar">
               {initials}
             </span>
           </button>
 
-          {profileOpen && (
-            <div className="header-popover profile-popover">
+          {accountOpen && (
+            <div className="sf-header-dropdown sf-account-dropdown">
 
-              <div className="profile-summary">
-                <div className="profile-large-avatar">
+              {/* PROFILE SUMMARY */}
+              <div className="sf-account-summary">
+
+                <div className="sf-account-avatar">
                   {initials}
                 </div>
 
-                <div className="profile-summary-text">
-                  <strong>{user.name || "SmartFlow User"}</strong>
+                <div className="sf-account-info">
+                  <strong>{displayName}</strong>
 
                   <span>
                     {user.email || "Account"}
                   </span>
                 </div>
+
               </div>
 
-              <div className="profile-divider" />
+              <div className="sf-dropdown-divider" />
 
-              <button
-                type="button"
-                className="profile-menu-item"
-                onClick={() => {
-                  setProfileOpen(false);
-                  navigate("/settings");
-                }}
+              {/* SETTINGS */}
+              <Link
+                to="/settings"
+                className="sf-account-menu-item"
+                onClick={() => setAccountOpen(false)}
               >
-                <span>⚙</span>
+                <span className="sf-menu-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5v.2h-2.5v-.2a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H4.5v-2.5h.2a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V4.5h2.5v.2a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.2v2.5h-.2a1.7 1.7 0 0 0-1.5 1Z" />
+                  </svg>
+                </span>
+
                 <span>
                   <strong>Settings</strong>
                   <small>Manage your account</small>
                 </span>
-              </button>
 
+                <span className="sf-menu-arrow">
+                  →
+                </span>
+              </Link>
+
+              {/* LOGOUT */}
               <button
                 type="button"
-                className="profile-menu-item profile-logout"
+                className="sf-account-menu-item sf-logout-item"
                 onClick={handleLogout}
               >
-                <span>↪</span>
+                <span className="sf-menu-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M10 17l5-5-5-5" />
+                    <path d="M15 12H3" />
+                    <path d="M21 19V5a2 2 0 0 0-2-2h-6" />
+                  </svg>
+                </span>
+
                 <span>
-                  <strong>Log out</strong>
-                  <small>End your current session</small>
+                  <strong>Logout</strong>
+                  <small>Sign out of SmartFlow</small>
                 </span>
               </button>
 
