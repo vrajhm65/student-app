@@ -4734,5 +4734,885 @@ a {
 }
 
 /* header bar */
+/* =========================================================
+   SMARTFLOW HEADER
+   Completely isolated header styling
+   ========================================================= */
 
+.sf-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  width: 100%;
+  min-height: 78px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 36px;
+
+  background: rgba(13, 15, 18, 0.94);
+  border-bottom: 1px solid #20242b;
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   LEFT SIDE
+   ========================================================= */
+
+.sf-header-left {
+  min-width: 0;
+}
+
+.sf-header-label {
+  margin: 0 0 5px;
+
+  color: #6f7680;
+
+  font-size: 9px;
+  line-height: 1;
+
+  font-weight: 700;
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+}
+
+.sf-header-greeting {
+  margin: 0;
+
+  color: #eef0f3;
+
+  font-size: 19px;
+  line-height: 1.25;
+
+  font-weight: 620;
+  letter-spacing: -0.025em;
+}
+
+.sf-header-greeting span {
+  font-size: 16px;
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+   ========================================================= */
+
+.sf-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+}
+
+.sf-header-date {
+  margin-right: 6px;
+
+  color: #7f8791;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   HEADER MENU WRAPPER
+   ========================================================= */
+
+.sf-header-menu {
+  position: relative;
+}
+
+
+/* =========================================================
+   ICON BUTTON
+   ========================================================= */
+
+.sf-header-icon-button,
+.sf-profile-button {
+  position: relative;
+
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #282d35;
+  border-radius: 12px;
+
+  background: #15181d;
+  color: #aeb4bd;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sf-header-icon-button:hover,
+.sf-header-icon-button.is-active,
+.sf-profile-button:hover,
+.sf-profile-button.is-active {
+  background: #1b1f25;
+  border-color: #3a414b;
+  color: #f0f2f5;
+}
+
+.sf-header-icon-button:active,
+.sf-profile-button:active {
+  transform: scale(0.96);
+}
+
+
+/* =========================================================
+   BELL
+   ========================================================= */
+
+.sf-bell-icon {
+  width: 20px;
+  height: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sf-bell-icon svg {
+  width: 19px;
+  height: 19px;
+
+  display: block;
+}
+
+
+/* =========================================================
+   NOTIFICATION BADGE
+   ========================================================= */
+
+.sf-notification-badge {
+  position: absolute;
+
+  top: -5px;
+  right: -5px;
+
+  min-width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 5px;
+
+  border: 2px solid #0d0f12;
+  border-radius: 20px;
+
+  background: #dfe3e8;
+  color: #111318;
+
+  font-size: 8px;
+  line-height: 1;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+.sf-profile-button {
+  overflow: hidden;
+}
+
+.sf-profile-avatar {
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: #252b35;
+  border: 1px solid #39414c;
+
+  color: #eef1f4;
+
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+}
+
+
+/* =========================================================
+   COMMON DROPDOWN
+   ========================================================= */
+
+.sf-header-dropdown {
+  position: absolute;
+
+  top: calc(100% + 12px);
+  right: 0;
+
+  overflow: hidden;
+
+  border: 1px solid #303641;
+  border-radius: 16px;
+
+  background: #15191f;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.42),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+
+  animation: sfDropdownIn 0.16s ease-out;
+
+  box-sizing: border-box;
+}
+
+@keyframes sfDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* =========================================================
+   NOTIFICATION DROPDOWN
+   ========================================================= */
+
+.sf-notification-dropdown {
+  width: 390px;
+}
+
+.sf-dropdown-header {
+  min-height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 20px;
+
+  border-bottom: 1px solid #272c34;
+
+  box-sizing: border-box;
+}
+
+.sf-dropdown-eyebrow {
+  margin: 0 0 5px;
+
+  color: #69717c;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 0.18em;
+}
+
+.sf-dropdown-header h3 {
+  margin: 0;
+
+  color: #eef0f3;
+
+  font-size: 17px;
+  line-height: 1.2;
+
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.sf-dropdown-count {
+  min-width: 27px;
+  height: 27px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #39414c;
+  border-radius: 8px;
+
+  background: #202630;
+
+  color: #dfe3e8;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   NOTIFICATION LIST
+   ========================================================= */
+
+.sf-notification-list {
+  max-height: 310px;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #3a414b transparent;
+}
+
+.sf-notification-group {
+  padding: 13px 12px 5px;
+}
+
+.sf-notification-group-title {
+  margin: 0 8px 7px;
+
+  color: #68717c;
+
+  font-size: 8px;
+  font-weight: 750;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sf-notification-item {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 11px 9px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+  color: inherit;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sf-notification-item:hover {
+  background: #1d2229;
+  transform: translateX(2px);
+}
+
+.sf-notification-item-icon {
+  width: 31px;
+  height: 31px;
+
+  flex: 0 0 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #343b45;
+  border-radius: 9px;
+
+  background: #1a1f26;
+
+  color: #bfc5cc;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sf-notification-item-content {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.sf-notification-item-content strong {
+  overflow: hidden;
+
+  color: #dfe2e6;
+
+  font-size: 11px;
+  line-height: 1.3;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sf-notification-item-content small {
+  color: #69717b;
+
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   EMPTY NOTIFICATIONS
+   ========================================================= */
+
+.sf-notification-empty {
+  min-height: 175px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 25px;
+
+  text-align: center;
+}
+
+.sf-empty-check {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 12px;
+
+  border: 1px solid #343b45;
+  border-radius: 11px;
+
+  background: #1b2027;
+
+  color: #bfc5cc;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.sf-notification-empty strong {
+  margin-bottom: 5px;
+
+  color: #dce0e5;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sf-notification-empty span {
+  max-width: 230px;
+
+  color: #69717b;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   NOTIFICATION FOOTER
+   ========================================================= */
+
+.sf-notification-footer {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 13px 20px;
+
+  border: 0;
+  border-top: 1px solid #272c34;
+
+  background: #13171c;
+
+  color: #9da4ad;
+
+  font-size: 10px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.sf-notification-footer:hover {
+  background: #1a1f25;
+  color: #e3e6ea;
+}
+
+.sf-notification-footer span {
+  font-size: 14px;
+}
+
+
+/* =========================================================
+   ACCOUNT DROPDOWN
+   ========================================================= */
+
+.sf-account-dropdown {
+  width: 320px;
+  padding: 0;
+}
+
+
+/* =========================================================
+   ACCOUNT SUMMARY
+   ========================================================= */
+
+.sf-account-summary {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 18px 18px 17px;
+}
+
+.sf-account-avatar {
+  width: 45px;
+  height: 45px;
+
+  flex: 0 0 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #414a57;
+  border-radius: 12px;
+
+  background: #252c36;
+
+  color: #f0f2f4;
+
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.sf-account-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+.sf-account-info strong {
+  overflow: hidden;
+
+  color: #eef0f3;
+
+  font-size: 13px;
+  line-height: 1.25;
+
+  font-weight: 650;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sf-account-info span {
+  overflow: hidden;
+
+  color: #6f7782;
+
+  font-size: 9px;
+  line-height: 1.3;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.sf-dropdown-divider {
+  width: 100%;
+  height: 1px;
+
+  background: #292f37;
+}
+
+
+/* =========================================================
+   ACCOUNT MENU ITEM
+   ========================================================= */
+
+.sf-account-menu-item {
+  width: 100%;
+
+  min-height: 64px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  padding: 10px 15px;
+
+  border: 0;
+  border-radius: 0;
+
+  background: transparent;
+  color: inherit;
+
+  text-decoration: none;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  box-sizing: border-box;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.sf-account-menu-item:hover {
+  background: #1c2128;
+}
+
+.sf-menu-icon {
+  width: 34px;
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #343b45;
+  border-radius: 9px;
+
+  background: #191e24;
+
+  color: #aeb5be;
+}
+
+.sf-menu-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.sf-account-menu-item > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.sf-account-menu-item strong {
+  color: #dfe2e6;
+
+  font-size: 10px;
+  line-height: 1.3;
+
+  font-weight: 600;
+}
+
+.sf-account-menu-item small {
+  color: #68717c;
+
+  font-size: 8px;
+  line-height: 1.3;
+}
+
+.sf-menu-arrow {
+  color: #59616c;
+
+  font-size: 14px;
+
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sf-account-menu-item:hover .sf-menu-arrow {
+  color: #b9bec6;
+  transform: translateX(2px);
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.sf-logout-item {
+  border-top: 1px solid #292f37;
+}
+
+.sf-logout-item:hover {
+  background: #211b1e;
+}
+
+.sf-logout-item:hover .sf-menu-icon {
+  border-color: #49353a;
+  color: #d1a9ae;
+}
+
+.sf-logout-item:hover strong {
+  color: #d6b0b5;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 820px) {
+
+  .sf-header {
+    min-height: 70px;
+    padding: 12px 22px;
+  }
+
+  .sf-header-greeting {
+    font-size: 17px;
+  }
+
+  .sf-header-date {
+    display: none;
+  }
+
+  .sf-notification-dropdown {
+    width: 360px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 620px) {
+
+  .sf-header {
+    min-height: 68px;
+
+    padding: 11px 16px;
+  }
+
+  .sf-header-label {
+    font-size: 8px;
+  }
+
+  .sf-header-greeting {
+    max-width: 230px;
+
+    overflow: hidden;
+
+    font-size: 15px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .sf-header-greeting span {
+    font-size: 13px;
+  }
+
+  .sf-header-right {
+    gap: 7px;
+  }
+
+  .sf-header-icon-button,
+  .sf-profile-button {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 11px;
+  }
+
+  .sf-profile-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sf-notification-dropdown,
+  .sf-account-dropdown {
+    width: min(330px, calc(100vw - 28px));
+  }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+  .sf-header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .sf-header-greeting {
+    max-width: 170px;
+  }
+
+  .sf-header-right {
+    gap: 5px;
+  }
+
+  .sf-notification-dropdown,
+  .sf-account-dropdown {
+    position: fixed;
+
+    top: 73px;
+    right: 12px;
+    left: 12px;
+
+    width: auto;
+
+    max-width: none;
+  }
+
+}
 
