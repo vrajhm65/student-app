@@ -231,17 +231,18 @@ function Calendar() {
 
           <div className="calendar-card">
 
-            <div className="calendar-weekdays">
-              <span>Sun</span>
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
-            </div>
+            <div className="calendar-grid-wrap">
+              <div className="calendar-weekdays">
+                <div className="calendar-weekday">Sun</div>
+                <div className="calendar-weekday">Mon</div>
+                <div className="calendar-weekday">Tue</div>
+                <div className="calendar-weekday">Wed</div>
+                <div className="calendar-weekday">Thu</div>
+                <div className="calendar-weekday">Fri</div>
+                <div className="calendar-weekday">Sat</div>
+              </div>
 
-            <div className="calendar-grid">
+              <div className="calendar-grid">
 
               {Array.from({
                 length: firstDay,
@@ -296,6 +297,12 @@ function Calendar() {
                 }
               )}
 
+              </div>
+            </div>
+
+            <div className="calendar-legend">
+              <span className="activity-dot" aria-hidden="true" />
+              <span>Activity recorded on this day</span>
             </div>
           </div>
 
