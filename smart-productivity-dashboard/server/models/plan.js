@@ -19,6 +19,13 @@ const planSchema = new mongoose.Schema(
       default: false,
     },
 
+    // Stores the exact time when the plan was completed.
+    // This is used by the SmartFlow daily streak system.
+    completedAt: {
+      type: Date,
+      default: null,
+    },
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
