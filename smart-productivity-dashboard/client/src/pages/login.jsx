@@ -1,105 +1,184 @@
-
 import { useState } from "react";
-import { useNavigate, Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-      const data = await response.json();
+        setError("");
 
-      if (!response.ok) {
-        alert(data.message);
-        return;
-      }
+        if (!email.trim() || !password) {
+            setError("Please enter your email and password.");
+            return;
+        }
 
-      localStorage.setItem("token", data.token);
+        try {
+            setLoading(true);
 
-localStorage.setItem(
-  "smartflow_user",
-  JSON.stringify({
-    name: data.user?.name || data.name || "",
-    email: data.user?.email || data.email || email,
-  })
-);
+            const response = await fetch(
+                "http://localhost:5000/api/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email.trim(),
+                        password
+                    })
+                }
+            );
 
-      navigate("/");
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("Unable to connect to server");
-    }
-  };
+            const data = await response.json();
 
-  return (
-    <div className="login-page">
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Login failed"
+                );
+            }
 
-      <div className="login-card">
+            // Store authentication token
+            localStorage.setItem(
+                "token",
+                data.token
+            );
 
-        <div className="login-brand">
-          SmartFlow
+            // Store user information for SmartFlow UI
+            if (data.user) {
+                localStorage.setItem(
+                    "smartflow_user",
+                    JSON.stringify({
+                        id: data.user.id,
+                        name: data.user.name || "",
+                        email:
+                            data.user.email ||
+                            data.email ||
+                            email.trim()
+                    })
+                );
+            }
+
+            navigate("/");
+
+        } catch (error) {
+            console.error("Login error:", error);
+
+            setError(
+                error.message ||
+                "Unable to login. Please try again."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    return (
+        <div className="auth-page">
+
+            <div className="auth-card">
+
+                <div className="auth-brand">
+                    <div className="auth-logo">
+                        S
+                    </div>
+
+                    <div>
+                        <h1>SmartFlow</h1>
+                        <span>
+                            Smart Productivity Dashboard
+                        </span>
+                    </div>
+                </div>
+
+
+                <div className="auth-heading">
+                    <h2>Welcome back</h2>
+
+                    <p>
+                        Sign in to continue managing your
+                        productivity.
+                    </p>
+                </div>
+
+
+                <form
+                    className="auth-form"
+                    onSubmit={handleSubmit}
+                >
+
+                    <label className="auth-field">
+                        <span>Email</span>
+
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(event.target.value)
+                            }
+                            placeholder="Enter your email"
+                            autoComplete="email"
+                        />
+                    </label>
+
+
+                    <label className="auth-field">
+                        <span>Password</span>
+
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                            placeholder="Enter your password"
+                            autoComplete="current-password"
+                        />
+                    </label>
+
+
+                    {error && (
+                        <div className="auth-error">
+                            {error}
+                        </div>
+                    )}
+
+
+                    <button
+                        type="submit"
+                        className="auth-submit"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Signing in..."
+                            : "Sign In"}
+                    </button>
+
+                </form>
+
+
+                <div className="auth-footer">
+                    <span>
+                        Don't have an account?
+                    </span>
+
+                    <Link to="/register">
+                        Create account
+                    </Link>
+                </div>
+
+            </div>
+
         </div>
-
-        <p className="section-label">
-          WELCOME BACK
-        </p>
-
-        <h1>Sign in</h1>
-
-        <p className="login-description">
-          Continue managing your day and reaching your goals.
-        </p>
-
-        <form onSubmit={handleLogin}>
-
-          <label>Email</label>
-          <input
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
-
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
-
-          <button type="submit">
-            Sign in
-          </button>
-
-          <p className="auth-switch">
-  Don't have an account?{" "}
-  <Link to="/register">Create Account</Link>
-</p>
-        </form>
-
-      </div>
-
-    </div>
-  );
+    );
 }
 
 export default Login;
