@@ -5,6 +5,7 @@ const formatPlan = (plan) => ({
   time: plan.time,
   title: plan.title,
   completed: plan.completed,
+  completedAt: plan.completedAt || null,
   createdAt: plan.createdAt,
 });
 
@@ -38,6 +39,7 @@ const createPlan = async (req, res) => {
       time,
       title,
       completed: false,
+      completedAt: null,
       user: req.userId,
     });
 
@@ -76,7 +78,15 @@ const updatePlan = async (req, res) => {
     }
 
     if (req.body.completed !== undefined) {
-      plan.completed = req.body.completed;
+      const isCompleting = req.body.completed === true;
+
+      plan.completed = isCompleting;
+
+      if (isCompleting) {
+        plan.completedAt = plan.completedAt || new Date();
+      } else {
+        plan.completedAt = null;
+      }
     }
 
     await plan.save();
