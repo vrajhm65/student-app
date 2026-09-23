@@ -1,9 +1,10 @@
-const Plan = require("../models/plan");
+const Plan = require("../models/Plan");
 
 const formatPlan = (plan) => ({
   id: plan._id.toString(),
   time: plan.time,
   title: plan.title,
+  date: plan.date || null,
   completed: plan.completed,
   completedAt: plan.completedAt || null,
   createdAt: plan.createdAt,
@@ -13,7 +14,11 @@ const getPlans = async (req, res) => {
   try {
     const plans = await Plan.find({
       user: req.userId,
-    }).sort({ createdAt: 1 });
+    }).sort({
+      date: 1,
+      time: 1,
+      createdAt: 1,
+    });
 
     res.json(plans.map(formatPlan));
   } catch (error) {
@@ -27,7 +32,7 @@ const getPlans = async (req, res) => {
 
 const createPlan = async (req, res) => {
   try {
-    const { time, title } = req.body;
+    const { time, title, date } = req.body;
 
     if (!time || !title) {
       return res.status(400).json({
@@ -37,7 +42,8 @@ const createPlan = async (req, res) => {
 
     const plan = await Plan.create({
       time,
-      title,
+      title: title.trim(),
+      date: date || null,
       completed: false,
       completedAt: null,
       user: req.userId,
@@ -74,7 +80,17 @@ const updatePlan = async (req, res) => {
     }
 
     if (req.body.title !== undefined) {
-      plan.title = req.body.title;
+      if (!req.body.title.trim()) {
+        return res.status(400).json({
+          message: "Plan title cannot be empty",
+        });
+      }
+
+      plan.title = req.body.title.trim();
+    }
+
+    if (req.body.date !== undefined) {
+      plan.date = req.body.date || null;
     }
 
     if (req.body.completed !== undefined) {
