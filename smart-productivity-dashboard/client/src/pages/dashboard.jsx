@@ -10,6 +10,10 @@ function Dashboard() {
   const [focusSessions, setFocusSessions] = useState([]);
   const [focusSeconds, setFocusSeconds] = useState(0);
 
+  // Dashboard task editing
+  const [editingTaskId, setEditingTaskId] = useState(null);
+  const [editingTaskTitle, setEditingTaskTitle] = useState("");
+
   const token = localStorage.getItem("token");
 
   const authHeaders = {
@@ -35,9 +39,17 @@ function Dashboard() {
         const plansData = await plansRes.json();
         const focusData = await focusRes.json();
 
-        if (Array.isArray(tasksData)) setTasks(tasksData);
-        if (Array.isArray(plansData)) setPlans(plansData);
-        if (Array.isArray(focusData)) setFocusSessions(focusData);
+        if (Array.isArray(tasksData)) {
+          setTasks(tasksData);
+        }
+
+        if (Array.isArray(plansData)) {
+          setPlans(plansData);
+        }
+
+        if (Array.isArray(focusData)) {
+          setFocusSessions(focusData);
+        }
       } catch (error) {
         console.error("Dashboard loading error:", error);
       }
@@ -47,6 +59,7 @@ function Dashboard() {
   }, []);
 
   const completedTasks = tasks.filter((task) => task.completed).length;
+
   const completedPlans = plans.filter((plan) => plan.completed).length;
 
   const totalFocusSeconds = focusSessions.reduce(
@@ -65,6 +78,95 @@ function Dashboard() {
     plans.length > 0
       ? Math.round((completedPlans / plans.length) * 100)
       : 0;
+
+  /*
+    ---------------------------------------------------------
+    DATE HELPERS
+    ---------------------------------------------------------
+  */
+
+  const formatDate = (date) =>
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(new Date(date));
+
+  const today = new Date();
+
+  const todayString = formatDate(today);
+
+  const getPreviousDate = (dateString) => {
+    const date = new Date(`${dateString}T00:00:00+05:30`);
+
+    date.setDate(date.getDate() - 1);
+
+    return formatDate(date);
+  };
+
+  /*
+    ---------------------------------------------------------
+    REAL DAILY STREAK
+    A productive day = completed task OR completed plan
+    OR saved focus session.
+    ---------------------------------------------------------
+  */
+
+  const productiveDates = new Set();
+
+  tasks.forEach((task) => {
+    if (task.completed && task.completedAt) {
+      productiveDates.add(formatDate(task.completedAt));
+    }
+  });
+
+  plans.forEach((plan) => {
+    if (plan.completed && plan.completedAt) {
+      productiveDates.add(formatDate(plan.completedAt));
+    }
+  });
+
+  focusSessions.forEach((session) => {
+    if (session.createdAt) {
+      productiveDates.add(formatDate(session.createdAt));
+    }
+  });
+
+  const calculateCurrentStreak = () => {
+    if (productiveDates.size === 0) {
+      return 0;
+    }
+
+    let currentDate = todayString;
+
+    // If today has no activity, allow the streak to continue
+    // from yesterday.
+    if (!productiveDates.has(currentDate)) {
+      currentDate = getPreviousDate(currentDate);
+
+      if (!productiveDates.has(currentDate)) {
+        return 0;
+      }
+    }
+
+    let streak = 0;
+
+    while (productiveDates.has(currentDate)) {
+      streak += 1;
+      currentDate = getPreviousDate(currentDate);
+    }
+
+    return streak;
+  };
+
+  const currentStreak = calculateCurrentStreak();
+
+  /*
+    ---------------------------------------------------------
+    TASK ACTIONS
+    ---------------------------------------------------------
+  */
 
   const toggleTask = async (task) => {
     try {
@@ -99,10 +201,20 @@ function Dashboard() {
     }
   };
 
-  const editTask = async (task) => {
-    const newTitle = prompt("Edit task:", task.title);
+  const startEditingTask = (task) => {
+    setEditingTaskId(task.id);
+    setEditingTaskTitle(task.title);
+  };
 
-    if (!newTitle || !newTitle.trim()) {
+  const cancelEditingTask = () => {
+    setEditingTaskId(null);
+    setEditingTaskTitle("");
+  };
+
+  const saveEditedTask = async (task) => {
+    const title = editingTaskTitle.trim();
+
+    if (!title) {
       return;
     }
 
@@ -116,7 +228,7 @@ function Dashboard() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            title: newTitle.trim(),
+            title,
           }),
         }
       );
@@ -133,12 +245,32 @@ function Dashboard() {
           currentTask.id === task.id ? result.task : currentTask
         )
       );
+
+      cancelEditingTask();
     } catch (error) {
       console.error("Error editing task:", error);
     }
   };
 
+  const handleEditKeyDown = (event, task) => {
+    if (event.key === "Enter") {
+      saveEditedTask(task);
+    }
+
+    if (event.key === "Escape") {
+      cancelEditingTask();
+    }
+  };
+
   const deleteTask = async (task) => {
+    const shouldDelete = window.confirm(
+      `Delete "${task.title}"?`
+    );
+
+    if (!shouldDelete) {
+      return;
+    }
+
     try {
       const response = await fetch(
         `http://localhost:5000/api/tasks/${task.id}`,
@@ -167,7 +299,11 @@ function Dashboard() {
     }
   };
 
-  const today = new Date();
+  /*
+    ---------------------------------------------------------
+    TODAY'S PLAN
+    ---------------------------------------------------------
+  */
 
   const dateText = today.toLocaleDateString("en-US", {
     weekday: "long",
@@ -175,19 +311,10 @@ function Dashboard() {
     day: "numeric",
   });
 
-  const formatDate = (date) =>
-    new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Kolkata",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date(date));
-
-  const todayString = formatDate(today);
-
   const todayPlans = plans
     .filter((plan) => {
       if (!plan.createdAt) return true;
+
       return formatDate(plan.createdAt) === todayString;
     })
     .sort((a, b) => a.time.localeCompare(b.time));
@@ -275,16 +402,22 @@ function Dashboard() {
 
             <div className="overview-card">
               <div className="overview-card-top">
-                <span>Productivity</span>
-                <span className="overview-icon">↗</span>
+                <span>Daily streak</span>
+                <span className="overview-icon">✦</span>
               </div>
 
               <div className="overview-value">
-                {taskProgress}
-                <span>%</span>
+                {currentStreak}
+                <span> day{currentStreak === 1 ? "" : "s"}</span>
               </div>
 
-              <div className="overview-meta">task completion</div>
+              <div className="overview-meta">
+                {currentStreak === 0
+                  ? "start today"
+                  : currentStreak === 1
+                  ? "1 productive day"
+                  : "keep the streak going"}
+              </div>
             </div>
           </div>
 
@@ -294,7 +427,10 @@ function Dashboard() {
             <section className="dashboard-section schedule-section">
               <div className="dashboard-section-heading">
                 <div>
-                  <span className="dashboard-eyebrow">SCHEDULE</span>
+                  <span className="dashboard-eyebrow">
+                    SCHEDULE
+                  </span>
+
                   <h2>Today's plan</h2>
                 </div>
 
@@ -348,6 +484,7 @@ function Dashboard() {
               <div className="dashboard-section-heading">
                 <div>
                   <span className="dashboard-eyebrow">TASKS</span>
+
                   <h2>Recent tasks</h2>
                 </div>
 
@@ -366,63 +503,113 @@ function Dashboard() {
                 </div>
               ) : (
                 <div className="task-preview-list">
-                  {tasks.slice(0, 6).map((task) => (
-                    <div
-                      className={`task-preview ${
-                        task.completed ? "is-completed" : ""
-                      }`}
-                      key={task.id}
-                    >
-                      <button
-                        type="button"
-                        className={`task-check-button ${
-                          task.completed ? "checked" : ""
-                        }`}
-                        onClick={() => toggleTask(task)}
-                        aria-label={
-                          task.completed
-                            ? "Mark task as pending"
-                            : "Mark task as completed"
-                        }
-                      >
-                        {task.completed ? "✓" : ""}
-                      </button>
+                  {tasks.slice(0, 6).map((task) => {
+                    const isEditing = editingTaskId === task.id;
 
-                      <div className="task-preview-main">
-                        <span
-                          className={
+                    return (
+                      <div
+                        className={`task-preview ${
+                          task.completed ? "is-completed" : ""
+                        } ${isEditing ? "is-editing" : ""}`}
+                        key={task.id}
+                      >
+                        <button
+                          type="button"
+                          className={`task-check-button ${
+                            task.completed ? "checked" : ""
+                          }`}
+                          onClick={() => toggleTask(task)}
+                          aria-label={
                             task.completed
-                              ? "task-preview-title completed"
-                              : "task-preview-title"
+                              ? "Mark task as pending"
+                              : "Mark task as completed"
                           }
                         >
-                          {task.title}
-                        </span>
-
-                        <span className="task-preview-state">
-                          {task.completed ? "Completed" : "Pending"}
-                        </span>
-                      </div>
-
-                      <div className="task-preview-actions">
-                        <button
-                          type="button"
-                          onClick={() => editTask(task)}
-                          aria-label={`Edit ${task.title}`}
-                        >
-                          Edit
+                          {task.completed ? "✓" : ""}
                         </button>
 
-                        <button
-                          type="button"
-                          onClick={() => deleteTask(task)}
-                          aria-label={`Delete ${task.title}`}
-                        >
-                          Delete
-                        </button>
+                        <div className="task-preview-main">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editingTaskTitle}
+                              onChange={(event) =>
+                                setEditingTaskTitle(
+                                  event.target.value
+                                )
+                              }
+                              onKeyDown={(event) =>
+                                handleEditKeyDown(event, task)
+                              }
+                              autoFocus
+                              className="dashboard-task-edit-input"
+                              aria-label="Edit task title"
+                            />
+                          ) : (
+                            <span
+                              className={
+                                task.completed
+                                  ? "task-preview-title completed"
+                                  : "task-preview-title"
+                              }
+                            >
+                              {task.title}
+                            </span>
+                          )}
+
+                          <span className="task-preview-state">
+                            {task.completed
+                              ? "Completed"
+                              : "Pending"}
+                          </span>
+                        </div>
+
+                        <div className="task-preview-actions">
+                          {isEditing ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  saveEditedTask(task)
+                                }
+                              >
+                                Save
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={cancelEditingTask}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  startEditingTask(task)
+                                }
+                                aria-label={`Edit ${task.title}`}
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  deleteTask(task)
+                                }
+                                aria-label={`Delete ${task.title}`}
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </section>
@@ -431,7 +618,10 @@ function Dashboard() {
             <section className="dashboard-section focus-section">
               <div className="dashboard-section-heading">
                 <div>
-                  <span className="dashboard-eyebrow">FOCUS</span>
+                  <span className="dashboard-eyebrow">
+                    FOCUS
+                  </span>
+
                   <h2>Deep work</h2>
                 </div>
               </div>
@@ -454,7 +644,10 @@ function Dashboard() {
             <section className="dashboard-section progress-section">
               <div className="dashboard-section-heading">
                 <div>
-                  <span className="dashboard-eyebrow">PROGRESS</span>
+                  <span className="dashboard-eyebrow">
+                    PROGRESS
+                  </span>
+
                   <h2>Today's performance</h2>
                 </div>
 
@@ -464,6 +657,7 @@ function Dashboard() {
               <div className="metric-row">
                 <div className="metric-label">
                   <span>Tasks</span>
+
                   <strong>{taskProgress}%</strong>
                 </div>
 
@@ -479,6 +673,7 @@ function Dashboard() {
               <div className="metric-row">
                 <div className="metric-label">
                   <span>Daily plans</span>
+
                   <strong>{planProgress}%</strong>
                 </div>
 
